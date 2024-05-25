@@ -1,4 +1,6 @@
+import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/homepage.dart';
+import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
 import 'package:antitheftalarm/theme/theme_light.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: Themelight.light_theme,
       title: 'Flutter Demo',
       
-      home: Homepage(),
+      home: DonotTouchPhone(),
     );
   }
 }
