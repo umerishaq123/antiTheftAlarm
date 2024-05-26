@@ -15,11 +15,11 @@ class DonotTouchPhone extends StatefulWidget {
 }
 
 class _DonotTouchPhoneState extends State<DonotTouchPhone> {
-  bool _switchValue = false;
-  bool _stopswitchValue = false;
+  bool _flashlight = false;
+  bool vibration = false;
   int _selectedIndex = 0;
-    double _sensitivityValue = 0.5;
-     double _threshold = 12.0; // Adjust the threshold for sensitivity
+  double _sensitivityValue = 0.5;
+  double _threshold = 12.0; // Adjust the threshold for sensitivity
   StreamSubscription<AccelerometerEvent>? _subscription;
   bool _isAlarming = false;
 
@@ -30,17 +30,12 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
       // For example, navigate to different screens or show different content
     });
   }
+
   @override
   void initState() {
     super.initState();
-    _subscription = accelerometerEvents.listen((AccelerometerEvent event) {
-      double totalAcceleration = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
-      if (totalAcceleration > _threshold && !_isAlarming) {
-        playSound(context);
-      }
-    });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -63,8 +58,8 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                   children: [
                     InkWell(
                       onTap: () {
-                    Navigator.pop(context);
-                  },
+                        Navigator.pop(context);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 55, left: 15),
                         child: Icon(
@@ -102,19 +97,26 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                     ),
                     Center(
                         child: InkWell(
-                          onTap: (){
-                            print("the value of flash light:${_switchValue}");
-                            print("::: the value of vibration is this :${_stopswitchValue}");
-                          },
-                          child: CircleAvatar(
-                                                backgroundColor: Themecolor.black,
-                                                child: Text(
+                      onTap: () {
+                        _subscription = accelerometerEvents
+                            .listen((AccelerometerEvent event) {
+                          double totalAcceleration = sqrt(event.x * event.x +
+                              event.y * event.y +
+                              event.z * event.z);
+                          if (totalAcceleration > _threshold && !_isAlarming) {
+                            playSound(context, _flashlight, vibration);
+                          }
+                        });
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Themecolor.black,
+                        child: Text(
                           'Activate',
                           style: Themetext.ctextstyle,
-                                                ),
-                                                maxRadius: 45,
-                                              ),
-                        )),
+                        ),
+                        maxRadius: 45,
+                      ),
+                    )),
                     SizedBox(
                       height: height * 0.01,
                     ),
@@ -147,10 +149,10 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _switchValue,
+                            value: _flashlight,
                             onChanged: (value) {
                               setState(() {
-                                _switchValue = value;
+                                _flashlight = value;
                               });
                             },
                           ),
@@ -180,10 +182,10 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _stopswitchValue,
+                            value: vibration,
                             onChanged: (value) {
                               setState(() {
-                                _stopswitchValue = value;
+                                vibration = value;
                               });
                             },
                           ),
@@ -241,12 +243,14 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                                 'please adjust  sensitivity for motion detection ',
                                 style: Themetext.greyColortextstyle,
                               ),
-                               Slider(
+                              Slider(
                                 value: _sensitivityValue,
                                 min: 0,
                                 max: 1,
                                 divisions: 10,
-                                label: (_sensitivityValue * 100).round().toString(),
+                                label: (_sensitivityValue * 100)
+                                    .round()
+                                    .toString(),
                                 onChanged: (value) {
                                   setState(() {
                                     _sensitivityValue = value;
@@ -256,7 +260,6 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             ],
                           ),
                         ),
-                        
                       ),
                     )
                   ],
