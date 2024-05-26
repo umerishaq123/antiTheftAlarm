@@ -17,7 +17,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-
+  bool isAlarmTriigered = false;
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -33,7 +33,12 @@ class _HomepageState extends State<Homepage> {
             onPressed: () {
               // final player = AudioPlayer();
               // player.play(AssetSource('alarm.mp3'));
-              playSound(context,true,true);
+              if (isAlarmTriigered == false) {
+                setState(() {
+                  isAlarmTriigered = true;
+                });
+                playSound(context, true, true);
+              }
             },
             icon: Icon(Icons.sort),
             color: Themecolor.white,
@@ -370,5 +375,3 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
-
-

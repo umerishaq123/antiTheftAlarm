@@ -108,4 +108,5 @@ playSound(BuildContext context, bool torch ,bool vibrate) async {
       );
     },
   );
+
 }

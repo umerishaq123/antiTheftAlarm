@@ -1,5 +1,3 @@
-
-import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/homepage.dart';
 import 'package:antitheftalarm/theme/theme_light.dart';
 import 'package:flutter/material.dart';
