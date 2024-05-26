@@ -179,14 +179,9 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                             size: 35,
                             color: Themecolor.white,
                           ),
-                          title: Column(
-                            children: [
-                              Text('Avoid Over charging',style: Themetext.atextstyle,),
-                              Text(
-                                'For the best result always turn on vibration when you are in crowded areas and also turn on the flash light',
-                                style: Themetext.ctextstyle,
-                              ),
-                            ],
+                          title: Text(
+                            'For the best result always turn on vibration when you are in crowded areas and also turn on the flash light',
+                            style: Themetext.ctextstyle,
                           ),
                         ),
                       ),

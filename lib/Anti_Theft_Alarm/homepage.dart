@@ -277,7 +277,49 @@ class _HomepageState extends State<Homepage> {
                       ],
                     )),
               )
-            ],
+       ,           SizedBox(
+                height: height * 0.01,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    height: height * 0.13,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border(
+                            bottom: BorderSide(
+                                width: 2.0, style: BorderStyle.solid))),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'AirPhones Detection',
+                                style: Themetext.atextstyle.copyWith(fontWeight: FontWeight.w900,fontSize: 16),
+                              ),
+                              Icon(
+                                Icons.charging_station_rounded,
+                                color: Colors.red,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Alarm when battry is fully charged!',
+                            style: Themetext.greyColortextstyle,
+                          ),
+                        )
+                      ],
+                    )),
+              )
+          ],
           ),
         ),
       ),

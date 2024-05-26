@@ -170,20 +170,27 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        height: height * 0.1,
+                        // height: height * 0.1,
                         decoration: BoxDecoration(
                             color: Colors.green[300],
                             borderRadius:
                                 BorderRadius.all(Radius.circular(20))),
                         child: ListTile(
-                          leading: Icon(
-                            Icons.lightbulb,
-                            size: 35,
-                            color: Themecolor.white,
+                          leading: CircleAvatar(
+                         
+                            child: Image.asset('assets/images/charger.jpg'),
                           ),
-                          title: Text(
-                            'For the best result always turn on vibration when you are in crowded areas and also turn on the flash light',
-                            style: Themetext.ctextstyle,
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                               Text('Avoid Over charging',style: Themetext.atextstyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold)),
+                               SizedBox(height: height*0.01,),
+                              Text(
+                                
+                                'For the best result always turn on vibration when you are in crowded areas and also turn on the flash light',
+                                style: Themetext.ctextstyle,
+                              ),
+                            ],
                           ),
                         ),
                       ),
