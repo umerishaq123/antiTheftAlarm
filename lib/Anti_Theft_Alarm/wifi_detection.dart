@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class WifiDetection extends StatefulWidget {
   const WifiDetection({super.key});
@@ -10,8 +15,59 @@ class WifiDetection extends StatefulWidget {
 }
 
 class _WifiDetectionState extends State<WifiDetection> {
-  bool _switchValue = false;
-  bool _stopswitchValue = false;
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('::::Couldn\'t check connectivity status $e');
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+    // ignore: avoid_print
+    print('::: Connectivity changed: $_connectionStatus');
+    if (!result.contains(ConnectivityResult.wifi)) {
+      print(":::Disconnected from WiFi, start alarm!");
+      // Add your alarm triggering logic here
+      // For example, you can call a function to start the alarm
+      playSound(context, _tourch, vibration);
+    } else {
+      print("Connected to WiFi");
+    }
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  bool _tourch = false;
+  bool vibration = false;
   int _selectedIndex = 0;
   double _sensitivityValue = 0.5;
 
@@ -45,8 +101,8 @@ class _WifiDetectionState extends State<WifiDetection> {
                   children: [
                     InkWell(
                       onTap: () {
-                    Navigator.pop(context);
-                  },
+                        Navigator.pop(context);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 55, left: 15),
                         child: Icon(
@@ -82,15 +138,24 @@ class _WifiDetectionState extends State<WifiDetection> {
                     SizedBox(
                       height: height * 0.01,
                     ),
-                    Center(
-                        child: CircleAvatar(
-                      backgroundColor: Themecolor.black,
-                      child: Text(
-                        'Activate',
-                        style: Themetext.ctextstyle,
-                      ),
-                      maxRadius: 45,
-                    )),
+                    InkWell(
+                      onTap: () {
+                        initConnectivity();
+
+                        _connectivitySubscription = _connectivity
+                            .onConnectivityChanged
+                            .listen(_updateConnectionStatus);
+                      },
+                      child: Center(
+                          child: CircleAvatar(
+                        backgroundColor: Themecolor.black,
+                        child: Text(
+                          'Activate',
+                          style: Themetext.ctextstyle,
+                        ),
+                        maxRadius: 45,
+                      )),
+                    ),
                     SizedBox(
                       height: height * 0.01,
                     ),
@@ -131,10 +196,10 @@ class _WifiDetectionState extends State<WifiDetection> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _switchValue,
+                            value: _tourch,
                             onChanged: (value) {
                               setState(() {
-                                _switchValue = value;
+                                _tourch = value;
                               });
                             },
                           ),
@@ -164,10 +229,10 @@ class _WifiDetectionState extends State<WifiDetection> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _stopswitchValue,
+                            value: vibration,
                             onChanged: (value) {
                               setState(() {
-                                _stopswitchValue = value;
+                                vibration = value;
                               });
                             },
                           ),
@@ -201,7 +266,7 @@ class _WifiDetectionState extends State<WifiDetection> {
                     SizedBox(
                       height: height * 0.01,
                     ),
-               ],
+                  ],
                 ),
               ),
             ],
