@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 class DonotTouchPhone extends StatefulWidget {
   const DonotTouchPhone({super.key});
@@ -14,6 +19,9 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
   bool _stopswitchValue = false;
   int _selectedIndex = 0;
     double _sensitivityValue = 0.5;
+     double _threshold = 12.0; // Adjust the threshold for sensitivity
+  StreamSubscription<AccelerometerEvent>? _subscription;
+  bool _isAlarming = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -22,7 +30,17 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
       // For example, navigate to different screens or show different content
     });
   }
-
+  @override
+  void initState() {
+    super.initState();
+    _subscription = accelerometerEvents.listen((AccelerometerEvent event) {
+      double totalAcceleration = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
+      if (totalAcceleration > _threshold && !_isAlarming) {
+        playSound(context);
+      }
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -83,14 +101,20 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                       height: height * 0.01,
                     ),
                     Center(
-                        child: CircleAvatar(
-                      backgroundColor: Themecolor.black,
-                      child: Text(
-                        'Activate',
-                        style: Themetext.ctextstyle,
-                      ),
-                      maxRadius: 45,
-                    )),
+                        child: InkWell(
+                          onTap: (){
+                            print("the value of flash light:${_switchValue}");
+                            print("::: the value of vibration is this :${_stopswitchValue}");
+                          },
+                          child: CircleAvatar(
+                                                backgroundColor: Themecolor.black,
+                                                child: Text(
+                          'Activate',
+                          style: Themetext.ctextstyle,
+                                                ),
+                                                maxRadius: 45,
+                                              ),
+                        )),
                     SizedBox(
                       height: height * 0.01,
                     ),
