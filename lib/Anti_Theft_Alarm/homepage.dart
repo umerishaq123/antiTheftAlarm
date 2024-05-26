@@ -4,6 +4,7 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
+import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
@@ -16,21 +17,24 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      drawer: Drawer(
-        
-      ),
+      drawer: Drawer(),
       appBar: AppBar(
         title: Text('Anti Theft Alarm'),
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              // final player = AudioPlayer();
+              // player.play(AssetSource('alarm.mp3'));
+              playSound(context);
+            },
             icon: Icon(Icons.sort),
             color: Themecolor.white,
           )
@@ -366,3 +370,5 @@ class _HomepageState extends State<Homepage> {
     );
   }
 }
+
+
