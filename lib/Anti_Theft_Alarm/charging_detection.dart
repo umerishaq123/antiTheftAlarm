@@ -43,11 +43,16 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 55, left: 15),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Themecolor.white,
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 55, left: 15),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Themecolor.white,
+                        ),
                       ),
                     ),
                   ],
@@ -107,24 +112,22 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                                     color: Colors.black,
                                     width: 2.0,
                                     style: BorderStyle.solid))),
-                        child: Expanded(
-                          child: ListTile(
-                            leading: Icon(
-                              Icons.lightbulb_outlined,
-                              size: 30,
-                            ),
-                            title: Text(
-                              'Flash light',
-                              style: Themetext.atextstyle,
-                            ),
-                            trailing: Switch(
-                              value: _switchValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  _switchValue = value;
-                                });
-                              },
-                            ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.lightbulb_outlined,
+                            size: 30,
+                          ),
+                          title: Text(
+                            'Flash light',
+                            style: Themetext.atextstyle,
+                          ),
+                          trailing: Switch(
+                            value: _switchValue,
+                            onChanged: (value) {
+                              setState(() {
+                                _switchValue = value;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -168,7 +171,7 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        height: height * 0.1,
+                        // height: height * 0.1,
                         decoration: BoxDecoration(
                             color: Colors.green[300],
                             borderRadius:

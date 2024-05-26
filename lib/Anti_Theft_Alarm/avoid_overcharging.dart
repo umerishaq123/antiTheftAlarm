@@ -45,9 +45,14 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 55, left: 15),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Themecolor.white,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Themecolor.white,
+                        ),
                       ),
                     ),
                   ],
@@ -109,24 +114,22 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                                     color: Colors.black,
                                     width: 2.0,
                                     style: BorderStyle.solid))),
-                        child: Expanded(
-                          child: ListTile(
-                            leading: Icon(
-                              Icons.lightbulb_outlined,
-                              size: 30,
-                            ),
-                            title: Text(
-                              'Flash light',
-                              style: Themetext.atextstyle,
-                            ),
-                            trailing: Switch(
-                              value: _switchValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  _switchValue = value;
-                                });
-                              },
-                            ),
+                        child: ListTile(
+                          leading: Icon(
+                            Icons.lightbulb_outlined,
+                            size: 30,
+                          ),
+                          title: Text(
+                            'Flash light',
+                            style: Themetext.atextstyle,
+                          ),
+                          trailing: Switch(
+                            value: _switchValue,
+                            onChanged: (value) {
+                              setState(() {
+                                _switchValue = value;
+                              });
+                            },
                           ),
                         ),
                       ),
