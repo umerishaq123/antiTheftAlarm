@@ -17,7 +17,7 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
-  bool isAlarmTriigered = false;
+ 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -33,12 +33,7 @@ class _HomepageState extends State<Homepage> {
             onPressed: () {
               // final player = AudioPlayer();
               // player.play(AssetSource('alarm.mp3'));
-              if (isAlarmTriigered == false) {
-                setState(() {
-                  isAlarmTriigered = true;
-                });
-                playSound(context, true, true);
-              }
+              
             },
             icon: Icon(Icons.sort),
             color: Themecolor.white,
@@ -368,7 +363,49 @@ class _HomepageState extends State<Homepage> {
                       )),
                 ),
               )
-            ],
+       ,           SizedBox(
+                height: height * 0.01,
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    height: height * 0.13,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border(
+                            bottom: BorderSide(
+                                width: 2.0, style: BorderStyle.solid))),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'AirPhones Detection',
+                                style: Themetext.atextstyle.copyWith(fontWeight: FontWeight.w900,fontSize: 16),
+                              ),
+                              Icon(
+                                Icons.charging_station_rounded,
+                                color: Colors.red,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Alarm when battry is fully charged!',
+                            style: Themetext.greyColortextstyle,
+                          ),
+                        )
+                      ],
+                    )),
+              )
+          ],
           ),
         ),
       ),

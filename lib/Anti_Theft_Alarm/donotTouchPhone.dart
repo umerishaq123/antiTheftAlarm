@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:math';
+
+import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
+import 'package:sensors_plus/sensors_plus.dart';
 
 class DonotTouchPhone extends StatefulWidget {
   const DonotTouchPhone({super.key});
@@ -10,10 +15,13 @@ class DonotTouchPhone extends StatefulWidget {
 }
 
 class _DonotTouchPhoneState extends State<DonotTouchPhone> {
-  bool _switchValue = false;
-  bool _stopswitchValue = false;
+  bool _flashlight = false;
+  bool vibration = false;
   int _selectedIndex = 0;
-    double _sensitivityValue = 0.5;
+  double _sensitivityValue = 0.5;
+  double _threshold = 12.0; // Adjust the threshold for sensitivity
+  StreamSubscription<AccelerometerEvent>? _subscription;
+  bool _isAlarming = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -23,6 +31,12 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  bool isAlarmTriigered = false;
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -45,8 +59,8 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                   children: [
                     InkWell(
                       onTap: () {
-                    Navigator.pop(context);
-                  },
+                        Navigator.pop(context);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 55, left: 15),
                         child: Icon(
@@ -83,13 +97,32 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                       height: height * 0.01,
                     ),
                     Center(
-                        child: CircleAvatar(
-                      backgroundColor: Themecolor.black,
-                      child: Text(
-                        'Activate',
-                        style: Themetext.ctextstyle,
+                        child: InkWell(
+                      onTap: () {
+                        if (isAlarmTriigered == false) {
+                          setState(() {
+                            isAlarmTriigered = true;
+                          });
+                          // playSound(context, true, true);
+                        }
+                        _subscription = accelerometerEvents
+                            .listen((AccelerometerEvent event) {
+                          double totalAcceleration = sqrt(event.x * event.x +
+                              event.y * event.y +
+                              event.z * event.z);
+                          if (totalAcceleration > _threshold && !_isAlarming) {
+                            playSound(context, _flashlight, vibration);
+                          }
+                        });
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Themecolor.black,
+                        child: Text(
+                          'Activate',
+                          style: Themetext.ctextstyle,
+                        ),
+                        maxRadius: 45,
                       ),
-                      maxRadius: 45,
                     )),
                     SizedBox(
                       height: height * 0.01,
@@ -123,10 +156,10 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _switchValue,
+                            value: _flashlight,
                             onChanged: (value) {
                               setState(() {
-                                _switchValue = value;
+                                _flashlight = value;
                               });
                             },
                           ),
@@ -156,10 +189,10 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _stopswitchValue,
+                            value: vibration,
                             onChanged: (value) {
                               setState(() {
-                                _stopswitchValue = value;
+                                vibration = value;
                               });
                             },
                           ),
@@ -217,12 +250,14 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                                 'please adjust  sensitivity for motion detection ',
                                 style: Themetext.greyColortextstyle,
                               ),
-                               Slider(
+                              Slider(
                                 value: _sensitivityValue,
                                 min: 0,
                                 max: 1,
                                 divisions: 10,
-                                label: (_sensitivityValue * 100).round().toString(),
+                                label: (_sensitivityValue * 100)
+                                    .round()
+                                    .toString(),
                                 onChanged: (value) {
                                   setState(() {
                                     _sensitivityValue = value;
@@ -232,7 +267,6 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             ],
                           ),
                         ),
-                        
                       ),
                     )
                   ],
