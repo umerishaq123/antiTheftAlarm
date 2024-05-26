@@ -33,7 +33,7 @@ class _HomepageState extends State<Homepage> {
             onPressed: () {
               // final player = AudioPlayer();
               // player.play(AssetSource('alarm.mp3'));
-              playSound(context);
+              playSound(context,true,true);
             },
             icon: Icon(Icons.sort),
             color: Themecolor.white,
