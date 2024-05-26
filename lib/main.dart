@@ -1,6 +1,7 @@
 
 import 'package:antitheftalarm/Anti_Theft_Alarm/air_Phone_detection.dart';
-import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
+import 'package:antitheftalarm/Anti_Theft_Alarm/homepage.dart';
+
 import 'package:antitheftalarm/theme/theme_light.dart';
 import 'package:flutter/material.dart';
 
@@ -18,8 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: Themelight.light_theme,
       title: 'Flutter Demo',
-      
-      home: AirphonesDetection(),
+      home: Homepage(),
     );
   }
 }
