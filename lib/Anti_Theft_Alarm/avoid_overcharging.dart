@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
+import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/material.dart';
 
 class AvoidOvercharging extends StatefulWidget {
@@ -10,10 +14,14 @@ class AvoidOvercharging extends StatefulWidget {
 }
 
 class _AvoidOverchargingState extends State<AvoidOvercharging> {
-  bool _switchValue = false;
-  bool _stopswitchValue = false;
+  bool flashlight = false;
+  bool vibrate = false;
   int _selectedIndex = 0;
   double _sensitivityValue = 0.5;
+  final Battery _battery = Battery();
+
+  StreamSubscription<BatteryState>? _batterySubscription;
+  bool _isAlarming = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -22,7 +30,7 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
       // For example, navigate to different screens or show different content
     });
   }
-
+ bool isAlarmTriigered = false;
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -83,13 +91,30 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                       height: height * 0.01,
                     ),
                     Center(
-                        child: CircleAvatar(
-                      backgroundColor: Themecolor.black,
-                      child: Text(
-                        'Activate',
-                        style: Themetext.ctextstyle,
+                        child: InkWell(
+                       onTap: () {
+                          if (isAlarmTriigered == false) {
+                            setState(() {
+                              isAlarmTriigered = true;
+                            });
+                            _batterySubscription = _battery.onBatteryStateChanged.listen((BatteryState state) async {
+                              print('Battery state changed: $state'); // Debug statement
+                              if (state == BatteryState.full && !_isAlarming) {
+                                print('Battery is full. Playing sound...'); // Debug statement
+                                _isAlarming = true;
+                                playSound(context, flashlight, vibrate);
+                              }
+                            });
+                          }
+                        },
+                      child: CircleAvatar(
+                        backgroundColor: Themecolor.black,
+                        child: Text(
+                          'Activate',
+                          style: Themetext.ctextstyle,
+                        ),
+                        maxRadius: 45,
                       ),
-                      maxRadius: 45,
                     )),
                     SizedBox(
                       height: height * 0.01,
@@ -124,10 +149,10 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _switchValue,
+                            value: flashlight,
                             onChanged: (value) {
                               setState(() {
-                                _switchValue = value;
+                                flashlight = value;
                               });
                             },
                           ),
@@ -157,10 +182,10 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _stopswitchValue,
+                            value: vibrate,
                             onChanged: (value) {
                               setState(() {
-                                _stopswitchValue = value;
+                                vibrate = value;
                               });
                             },
                           ),
@@ -180,16 +205,19 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                                 BorderRadius.all(Radius.circular(20))),
                         child: ListTile(
                           leading: CircleAvatar(
-                         
                             child: Image.asset('assets/images/charger.jpg'),
                           ),
                           title: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text('Avoid Over charging',style: Themetext.atextstyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold)),
-                               SizedBox(height: height*0.01,),
+                              Text('Avoid Over charging',
+                                  style: Themetext.atextstyle.copyWith(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold)),
+                              SizedBox(
+                                height: height * 0.01,
+                              ),
                               Text(
-                                
                                 'For the best result always turn on vibration when you are in crowded areas and also turn on the flash light',
                                 style: Themetext.ctextstyle,
                               ),

@@ -1,5 +1,3 @@
-
-import 'package:antitheftalarm/Anti_Theft_Alarm/air_Phone_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/homepage.dart';
 
 import 'package:antitheftalarm/theme/theme_light.dart';

@@ -36,6 +36,7 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
     super.initState();
   }
 
+  bool isAlarmTriigered = false;
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -98,6 +99,12 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                     Center(
                         child: InkWell(
                       onTap: () {
+                        if (isAlarmTriigered == false) {
+                          setState(() {
+                            isAlarmTriigered = true;
+                          });
+                          // playSound(context, true, true);
+                        }
                         _subscription = accelerometerEvents
                             .listen((AccelerometerEvent event) {
                           double totalAcceleration = sqrt(event.x * event.x +
