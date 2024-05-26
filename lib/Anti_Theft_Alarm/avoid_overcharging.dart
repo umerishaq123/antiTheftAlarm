@@ -30,7 +30,19 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
       // For example, navigate to different screens or show different content
     });
   }
+   Timer? _batteryCheckTimer;
  bool isAlarmTriigered = false;
+  void _startBatteryCheck() {
+    _batteryCheckTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
+      final batteryLevel = await _battery.batteryLevel;
+      if (batteryLevel == 100 && !_isAlarming) {
+        setState(() {
+          _isAlarming = true;
+        });
+        playSound(context, flashlight, vibrate);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -97,14 +109,15 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                             setState(() {
                               isAlarmTriigered = true;
                             });
-                            _batterySubscription = _battery.onBatteryStateChanged.listen((BatteryState state) async {
-                              print('Battery state changed: $state'); // Debug statement
-                              if (state == BatteryState.full && !_isAlarming) {
-                                print('Battery is full. Playing sound...'); // Debug statement
-                                _isAlarming = true;
-                                playSound(context, flashlight, vibrate);
-                              }
-                            });
+                            // _batterySubscription = _battery.onBatteryStateChanged.listen((BatteryState state) async {
+                            //   print('Battery state changed: $state'); // Debug statement
+                            //   if (state == BatteryState.full && !_isAlarming) {
+                            //     print('Battery is full. Playing sound...'); // Debug statement
+                            //     _isAlarming = true;
+                            //     playSound(context, flashlight, vibrate);
+                            //   }
+                            // });
+                            _startBatteryCheck();
                           }
                         },
                       child: CircleAvatar(
