@@ -1,6 +1,13 @@
+import 'dart:async';
+
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:torch_light/torch_light.dart';
+import 'package:vibration/vibration.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class ChargingDetection extends StatefulWidget {
   const ChargingDetection({super.key});
@@ -10,23 +17,60 @@ class ChargingDetection extends StatefulWidget {
 }
 
 class _ChargingDetectionState extends State<ChargingDetection> {
-  bool _switchValue = false;
-  bool _stopswitchValue = false;
+  bool flashlight = false;
+  bool vibrate = false;
   int _selectedIndex = 0;
-  double _sensitivityValue = 0.5;
+  final Battery _battery = Battery();
+  bool isActivatedPress = false;
+  bool isAlarmTriggered = false;
+
+  StreamSubscription<BatteryState>? _batterySubscription;
+  BatteryState _batteryState = BatteryState.unknown;
+
+  @override
+  void initState() {
+    super.initState();
+    // Subscribe to battery state changes
+    _batterySubscription = _battery.onBatteryStateChanged.listen((BatteryState state) {
+      setState(() {
+        _batteryState = state;
+      });
+
+      if (state == BatteryState.discharging) {
+        // Trigger the alarm when the device is unplugged
+        if (isActivatedPress && !isAlarmTriggered) {
+          isAlarmTriggered = true;
+          playSound(context, flashlight, vibrate);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _batterySubscription?.cancel();
+    super.dispose();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       // Add your navigation logic here based on the index
-      // For example, navigate to different screens or show different content
     });
+  }
+
+  void _activateAlarm() {
+    if (_batteryState == BatteryState.charging) {
+      setState(() {
+        isActivatedPress = true;
+        isAlarmTriggered = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -38,7 +82,6 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Themecolor.primary,
-                  // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,20 +126,34 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                       height: height * 0.01,
                     ),
                     Center(
-                        child: CircleAvatar(
-                      backgroundColor: Themecolor.black,
-                      child: Image.asset('assets/images/charger.jpg'),
-                      maxRadius: 45,
-                    )),
+                      child: _batteryState == BatteryState.charging
+                          ? InkWell(
+                              onTap: _activateAlarm,
+                              child: CircleAvatar(
+                                backgroundColor: Themecolor.black,
+                                child: Text(
+                                  isActivatedPress ? 'Activated' : 'Activate',
+                                  style: Themetext.ctextstyle,
+                                ),
+                                maxRadius: 45,
+                              ),
+                            )
+                          : CircleAvatar(
+                              backgroundColor: Themecolor.black,
+                              child: Image.asset('assets/images/charger.jpg'),
+                              maxRadius: 45,
+                            ),
+                    ),
                     SizedBox(
                       height: height * 0.01,
                     ),
                     Text(
-                      'Please connect charger',
-                      style: Themetext.atextstyle
-                          .copyWith(fontWeight: FontWeight.bold),
+                      _batteryState == BatteryState.charging
+                          ? 'Charger Connected'
+                          : 'Please connect charger',
+                      style: Themetext.atextstyle.copyWith(
+                          fontWeight: FontWeight.bold),
                     ),
-                   
                     SizedBox(
                       height: height * 0.01,
                     ),
@@ -122,10 +179,10 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _switchValue,
+                            value: flashlight,
                             onChanged: (value) {
                               setState(() {
-                                _switchValue = value;
+                                flashlight = value;
                               });
                             },
                           ),
@@ -155,10 +212,10 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _stopswitchValue,
+                            value: vibrate,
                             onChanged: (value) {
                               setState(() {
-                                _stopswitchValue = value;
+                                vibrate = value;
                               });
                             },
                           ),
@@ -171,7 +228,6 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
-                        // height: height * 0.1,
                         decoration: BoxDecoration(
                             color: Colors.green[300],
                             borderRadius:
@@ -192,7 +248,7 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                     SizedBox(
                       height: height * 0.01,
                     ),
-               ],
+                  ],
                 ),
               ),
             ],
@@ -214,6 +270,108 @@ class _ChargingDetectionState extends State<ChargingDetection> {
         selectedItemColor: Themecolor.primary,
         onTap: _onItemTapped,
       ),
+    );
+  }
+
+  playSound(BuildContext context, bool torch, bool vibrate) async {
+    // Set the device volume to maximum
+    VolumeController().maxVolume();
+
+    final player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+    player.play(AssetSource('alarm.mp3'), volume: 1.0);
+    await player.resume();
+
+    // Turn on the flashlight
+    try {
+      if (torch == true) {
+        await TorchLight.enableTorch();
+      }
+    } catch (e) {
+      print('Could not enable torch: $e');
+    }
+
+    if (vibrate == true) {
+      Vibration.vibrate(
+        pattern: [
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+        ],
+        intensities: [
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+        ],
+      );
+    }
+
+    // Show alert dialog to stop the sound
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alarm Playing'),
+          content: Text('The alarm is playing. Do you want to stop it?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  isActivatedPress = false;
+                });
+                await player.stop();
+                await TorchLight.disableTorch();
+                Vibration.cancel();
+                Navigator.of(context).pop();
+              },
+              child: Text('Stop Alarm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

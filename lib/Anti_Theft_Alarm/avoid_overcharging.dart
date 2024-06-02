@@ -1,10 +1,12 @@
 import 'dart:async';
-
-import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:torch_light/torch_light.dart';
+import 'package:vibration/vibration.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class AvoidOvercharging extends StatefulWidget {
   const AvoidOvercharging({super.key});
@@ -17,11 +19,9 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
   bool flashlight = false;
   bool vibrate = false;
   int _selectedIndex = 0;
-  double _sensitivityValue = 0.5;
   final Battery _battery = Battery();
-
-  StreamSubscription<BatteryState>? _batterySubscription;
-  bool _isAlarming = false;
+  bool isActivatedPress = false;
+  bool isAlarmTriigered = false;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -30,19 +30,20 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
       // For example, navigate to different screens or show different content
     });
   }
-   Timer? _batteryCheckTimer;
- bool isAlarmTriigered = false;
+
+  Timer? _batteryCheckTimer;
   void _startBatteryCheck() {
     _batteryCheckTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
       final batteryLevel = await _battery.batteryLevel;
-      if (batteryLevel == 100 && !_isAlarming) {
-        setState(() {
-          _isAlarming = true;
-        });
-        playSound(context, flashlight, vibrate);
+      if (batteryLevel == 100) {
+        if (isAlarmTriigered == false) {
+          isAlarmTriigered = true;
+          playSound(context, flashlight, vibrate);
+        }
       }
     });
   }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -104,26 +105,22 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                     ),
                     Center(
                         child: InkWell(
-                       onTap: () {
-                          if (isAlarmTriigered == false) {
-                            setState(() {
-                              isAlarmTriigered = true;
-                            });
-                            // _batterySubscription = _battery.onBatteryStateChanged.listen((BatteryState state) async {
-                            //   print('Battery state changed: $state'); // Debug statement
-                            //   if (state == BatteryState.full && !_isAlarming) {
-                            //     print('Battery is full. Playing sound...'); // Debug statement
-                            //     _isAlarming = true;
-                            //     playSound(context, flashlight, vibrate);
-                            //   }
-                            // });
-                            _startBatteryCheck();
-                          }
-                        },
+                      onTap: () {
+                        setState(() {
+                          isActivatedPress = true;
+                        });
+                        if (isAlarmTriigered == true) {
+                          setState(() {
+                            isAlarmTriigered = false;
+                          });
+                        } else {
+                          _startBatteryCheck();
+                        }
+                      },
                       child: CircleAvatar(
                         backgroundColor: Themecolor.black,
                         child: Text(
-                          'Activate',
+                          isActivatedPress ? 'Activated' : 'Activate',
                           style: Themetext.ctextstyle,
                         ),
                         maxRadius: 45,
@@ -264,6 +261,115 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
         selectedItemColor: Themecolor.primary,
         onTap: _onItemTapped,
       ),
+    );
+  }
+
+  playSound(BuildContext context, bool torch, bool vibrate) async {
+    // Set the device volume to maximum
+    VolumeController().maxVolume();
+
+    final player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+    player.play(AssetSource('alarm.mp3'), volume: 1.0);
+    // await player.setSource(AssetSource('alarm.mp3'));
+    await player.resume();
+
+    // Turn on the flashlight
+    try {
+      if (torch == true) {
+        await TorchLight.enableTorch();
+      }
+    } catch (e) {
+      print('Could not enable torch: $e');
+    }
+    // var hasVibrator = await Vibration.hasVibrator();
+    // // Vibrate the device
+    // if (hasVibrator != null) {
+    //   if (hasVibrator) {
+    //     Vibration.vibrate();
+    //   }
+    // }
+    if (vibrate == true) {
+      Vibration.vibrate(
+        pattern: [
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+        ],
+        intensities: [
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255
+        ],
+      );
+    }
+
+    // Show alert dialog to stop the sound
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alarm Playing'),
+          content: Text('The alarm is playing. Do you want to stop it?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  isActivatedPress = false;
+                });
+                await player.stop();
+                await TorchLight.disableTorch();
+                Vibration.cancel();
+                Navigator.of(context).pop();
+              },
+              child: Text('Stop Alarm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,11 +1,13 @@
 import 'dart:async';
-
-import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:torch_light/torch_light.dart';
+import 'package:vibration/vibration.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class WifiDetection extends StatefulWidget {
   const WifiDetection({super.key});
@@ -17,11 +19,18 @@ class WifiDetection extends StatefulWidget {
 class _WifiDetectionState extends State<WifiDetection> {
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
+  bool isActivatedPress = false;
+  bool _tourch = false;
+  bool vibration = false;
+  int _selectedIndex = 0;
+  bool isAlarmTriigered = false;
+
   @override
   void initState() {
     super.initState();
   }
+
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
@@ -54,7 +63,10 @@ class _WifiDetectionState extends State<WifiDetection> {
       print(":::Disconnected from WiFi, start alarm!");
       // Add your alarm triggering logic here
       // For example, you can call a function to start the alarm
-      playSound(context, _tourch, vibration);
+      if (isAlarmTriigered == false) {
+        isAlarmTriigered = true;
+        playSound(context, _tourch, vibration);
+      }
     } else {
       print("Connected to WiFi");
     }
@@ -62,14 +74,9 @@ class _WifiDetectionState extends State<WifiDetection> {
 
   @override
   void dispose() {
-    _connectivitySubscription.cancel();
+    _connectivitySubscription?.cancel();
     super.dispose();
   }
-
-  bool _tourch = false;
-  bool vibration = false;
-  int _selectedIndex = 0;
-  double _sensitivityValue = 0.5;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -82,7 +89,6 @@ class _WifiDetectionState extends State<WifiDetection> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -94,7 +100,6 @@ class _WifiDetectionState extends State<WifiDetection> {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Themecolor.primary,
-                  // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,18 +144,42 @@ class _WifiDetectionState extends State<WifiDetection> {
                       height: height * 0.01,
                     ),
                     InkWell(
-                      onTap: () {
-                        initConnectivity();
+                      onTap: () async {
+                        // Check connectivity
+                        List<ConnectivityResult> connectivityResult =
+                            await _connectivity.checkConnectivity();
+                        if (!connectivityResult
+                            .contains(ConnectivityResult.wifi)) {
+                          // If not connected to WiFi, show Snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'In order to start the alarm please connect to WiFi first!'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        } else {
+                          // if(_connectivity == ){}
+                          if (isAlarmTriigered == true) {
+                            isAlarmTriigered = false;
+                          }
+                          {
+                            setState(() {
+                              isActivatedPress = true;
+                            });
+                            initConnectivity();
 
-                        _connectivitySubscription = _connectivity
-                            .onConnectivityChanged
-                            .listen(_updateConnectionStatus);
+                            _connectivitySubscription = _connectivity
+                                .onConnectivityChanged
+                                .listen(_updateConnectionStatus);
+                          }
+                        }
                       },
                       child: Center(
                           child: CircleAvatar(
                         backgroundColor: Themecolor.black,
                         child: Text(
-                          'Activate',
+                          isActivatedPress ? 'Activated' : 'Activate',
                           style: Themetext.ctextstyle,
                         ),
                         maxRadius: 45,
@@ -207,6 +236,7 @@ class _WifiDetectionState extends State<WifiDetection> {
                       ),
                     ),
                     SizedBox(height: height * 0.01),
+                 
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -288,6 +318,115 @@ class _WifiDetectionState extends State<WifiDetection> {
         selectedItemColor: Themecolor.primary,
         onTap: _onItemTapped,
       ),
+    );
+  }
+
+  playSound(BuildContext context, bool torch, bool vibrate) async {
+    // Set the device volume to maximum
+    VolumeController().maxVolume();
+
+    final player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+    player.play(AssetSource('alarm.mp3'), volume: 1.0);
+    // await player.setSource(AssetSource('alarm.mp3'));
+    await player.resume();
+
+    // Turn on the flashlight
+    try {
+      if (torch == true) {
+        await TorchLight.enableTorch();
+      }
+    } catch (e) {
+      print('Could not enable torch: $e');
+    }
+    // var hasVibrator = await Vibration.hasVibrator();
+    // // Vibrate the device
+    // if (hasVibrator != null) {
+    //   if (hasVibrator) {
+    //     Vibration.vibrate();
+    //   }
+    // }
+    if (vibrate == true) {
+      Vibration.vibrate(
+        pattern: [
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+        ],
+        intensities: [
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255
+        ],
+      );
+    }
+
+    // Show alert dialog to stop the sound
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alarm Playing'),
+          content: Text('The alarm is playing. Do you want to stop it?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  isActivatedPress = false;
+                });
+                await player.stop();
+                await TorchLight.disableTorch();
+                Vibration.cancel();
+                Navigator.of(context).pop();
+              },
+              child: Text('Stop Alarm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:math';
-
-import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:torch_light/torch_light.dart';
+import 'package:vibration/vibration.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class DonotTouchPhone extends StatefulWidget {
   const DonotTouchPhone({super.key});
@@ -21,13 +23,12 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
   double _sensitivityValue = 0.5;
   double _threshold = 12.0; // Adjust the threshold for sensitivity
   StreamSubscription<AccelerometerEvent>? _subscription;
-  bool _isAlarming = false;
+  bool isAlarmTriigered = false;
+  bool isActivatedPress = false;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      // Add your navigation logic here based on the index
-      // For example, navigate to different screens or show different content
     });
   }
 
@@ -36,7 +37,6 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
     super.initState();
   }
 
-  bool isAlarmTriigered = false;
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -99,26 +99,34 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                     Center(
                         child: InkWell(
                       onTap: () {
-                        if (isAlarmTriigered == false) {
-                          setState(() {
-                            isAlarmTriigered = true;
-                          });
-                          // playSound(context, true, true);
-                        }
-                        _subscription = accelerometerEvents
-                            .listen((AccelerometerEvent event) {
-                          double totalAcceleration = sqrt(event.x * event.x +
-                              event.y * event.y +
-                              event.z * event.z);
-                          if (totalAcceleration > _threshold && !_isAlarming) {
-                            playSound(context, _flashlight, vibration);
-                          }
+                        setState(() {
+                          isActivatedPress = true;
                         });
+                        if (isAlarmTriigered == true) {
+                          isAlarmTriigered = false;
+                        } else {
+                          _subscription = accelerometerEvents
+                              .listen((AccelerometerEvent event) {
+                            double totalAcceleration = sqrt(event.x * event.x +
+                                event.y * event.y +
+                                event.z * event.z);
+                            if (totalAcceleration > _threshold) {
+                              if (isAlarmTriigered == false) {
+                                isAlarmTriigered = true;
+                                playSound(
+                                  context,
+                                  _flashlight,
+                                  vibration,
+                                );
+                              }
+                            }
+                          });
+                        }
                       },
                       child: CircleAvatar(
                         backgroundColor: Themecolor.black,
                         child: Text(
-                          'Activate',
+                          isActivatedPress ? 'Activated' : 'Activate',
                           style: Themetext.ctextstyle,
                         ),
                         maxRadius: 45,
@@ -241,26 +249,46 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             size: 35,
                           ),
                           title: Text(
-                            'motion Alarm Sensitivity',
+                            'Motion Alarm Sensitivity',
                             style: Themetext.atextstyle,
                           ),
                           subtitle: Column(
                             children: [
                               Text(
-                                'please adjust  sensitivity for motion detection ',
+                                'Please adjust  sensitivity for motion detection ',
                                 style: Themetext.greyColortextstyle,
                               ),
+
+                              // Slider(
+                              //   value: _sensitivityValue,
+                              //   min: 0,
+                              //   max: 1,
+                              //   divisions: 10,
+                              //   label: (_sensitivityValue * 100)
+                              //       .round()
+                              //       .toString(),
+                              //   onChanged: (value) {
+                              //     setState(() {
+                              //       _sensitivityValue = value;
+                              //       // Update the threshold based on sensitivity value
+                              //       _threshold = 20 - (value * 20);
+                              //       print('::::_threshold $_threshold');
+                              //     });
+                              //   },
+                              // ),
                               Slider(
                                 value: _sensitivityValue,
                                 min: 0,
                                 max: 1,
-                                divisions: 10,
-                                label: (_sensitivityValue * 100)
+                                divisions: 8,
+                                label: (20 - (_sensitivityValue * 8))
                                     .round()
                                     .toString(),
                                 onChanged: (value) {
                                   setState(() {
                                     _sensitivityValue = value;
+                                    _threshold = 20 - (value * 8);
+                                    print('::::_threshold $_threshold');
                                   });
                                 },
                               ),
@@ -291,6 +319,119 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
         selectedItemColor: Themecolor.primary,
         onTap: _onItemTapped,
       ),
+    );
+  }
+
+  playSound(BuildContext context, bool torch, bool vibrate) async {
+    // Set the device volume to maximum
+    VolumeController().maxVolume();
+
+    final player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+    player.play(AssetSource('alarm.mp3'), volume: 1.0);
+    // await player.setSource(AssetSource('alarm.mp3'));
+    await player.resume();
+
+    // Turn on the flashlight
+    try {
+      if (torch == true) {
+        await TorchLight.enableTorch();
+      }
+    } catch (e) {
+      print('Could not enable torch: $e');
+    }
+    // var hasVibrator = await Vibration.hasVibrator();
+    // // Vibrate the device
+    // if (hasVibrator != null) {
+    //   if (hasVibrator) {
+    //     Vibration.vibrate();
+    //   }
+    // }
+    if (vibrate == true) {
+      Vibration.vibrate(
+        pattern: [
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+        ],
+        intensities: [
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255
+        ],
+      );
+    }
+
+    // Show alert dialog to stop the sound
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alarm Playing'),
+          content: Text('The alarm is playing. Do you want to stop it?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                // setState(() {
+                //   isAlarmTriigered = false;
+                // });
+                // _subscription?.cancel();
+                setState(() {
+                  isActivatedPress = false;
+                });
+                await player.stop();
+                await TorchLight.disableTorch();
+                Vibration.cancel();
+                Navigator.of(context).pop();
+              },
+              child: Text('Stop Alarm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

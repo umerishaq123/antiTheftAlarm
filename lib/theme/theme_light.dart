@@ -16,8 +16,10 @@ class Themelight {
   static AppBarTheme appbar_theme = const AppBarTheme(
       backgroundColor: Themecolor.primary,
       titleTextStyle: TextStyle(color: Colors.white));
+
   static ElevatedButtonThemeData elevatedbuttontheme = ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
+      foregroundColor:Themecolor.white,
       backgroundColor: Themecolor.primary,
       padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
       shape: RoundedRectangleBorder(

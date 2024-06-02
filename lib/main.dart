@@ -1,8 +1,8 @@
 import 'package:antitheftalarm/Anti_Theft_Alarm/homepage.dart';
 import 'package:antitheftalarm/theme/theme_light.dart';
 import 'package:flutter/material.dart';
-
 void main() {
+
   runApp(const MyApp());
 }
 
@@ -15,9 +15,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: Themelight.light_theme,
-      title: 'Flutter Demo',
+      title: 'Anti Theft Alarm',
       home: Homepage(),
     );
   }
 }
-

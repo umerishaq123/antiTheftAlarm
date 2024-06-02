@@ -1,12 +1,12 @@
+import 'package:antitheftalarm/Anti_Theft_Alarm/air_pods_ddetction.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/anti_pocket_detecttion.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
+import 'package:antitheftalarm/Anti_Theft_Alarm/drawer.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
-import 'package:antitheftalarm/controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
-import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {
@@ -17,28 +17,18 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
- 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      drawer: Drawer(),
+      drawer: MyDrawer(width: width),
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white), // Change the color here
+
         title: Text('Anti Theft Alarm'),
         centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: () {
-              // final player = AudioPlayer();
-              // player.play(AssetSource('alarm.mp3'));
-              
-            },
-            icon: Icon(Icons.sort),
-            color: Themecolor.white,
-          )
-        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -362,50 +352,61 @@ class _HomepageState extends State<Homepage> {
                         ],
                       )),
                 ),
-              )
-       ,           SizedBox(
+              ),
+              SizedBox(
                 height: height * 0.01,
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                    height: height * 0.13,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border(
-                            bottom: BorderSide(
-                                width: 2.0, style: BorderStyle.solid))),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'AirPhones Detection',
-                                style: Themetext.atextstyle.copyWith(fontWeight: FontWeight.w900,fontSize: 16),
-                              ),
-                              Icon(
-                                Icons.charging_station_rounded,
-                                color: Colors.red,
-                              ),
-                            ],
+              InkWell(
+                onTap: () {
+                  
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AirPodsDetection(),
+                      ));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      height: height * 0.13,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border(
+                              bottom: BorderSide(
+                                  width: 2.0, style: BorderStyle.solid))),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'AirPhones Detection',
+                                  style: Themetext.atextstyle.copyWith(
+                                      fontWeight: FontWeight.w900, fontSize: 16),
+                                ),
+                                Icon(
+                                  Icons.headphones,
+                                  color: Colors.red,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'Alarm when battry is fully charged!',
-                            style: Themetext.greyColortextstyle,
-                          ),
-                        )
-                      ],
-                    )),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Alarm when battry is fully charged!',
+                              style: Themetext.greyColortextstyle,
+                            ),
+                          )
+                        ],
+                      )),
+                ),
               )
-          ],
+            ],
           ),
         ),
       ),
