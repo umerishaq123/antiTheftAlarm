@@ -6,17 +6,35 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/drawer.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/utils.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {
-  const Homepage({super.key});
+  bool didItShowedInterestitalAd;
+  Homepage({super.key, required this.didItShowedInterestitalAd});
 
   @override
   State<Homepage> createState() => _HomepageState();
 }
 
 class _HomepageState extends State<Homepage> {
+  @override
+  void initState() {
+    super.initState();
+    // Future.delayed(Duration(seconds: 10), () {
+    //   print('::: calling getInterstitialAdButton 1 ');
+    //   if (widget.didItShowedInterestitalAd == false) {
+    //     print('::: calling getInterstitialAdButton 2  ');
+
+    //     AdManager.getInterstitialAdButton(onAdLoaded: (as) {
+    //       print('::: loaded the ad on home');
+    //     });
+    //   }
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -42,11 +60,15 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => IntruderAlert(),
-                      ));
+                  // logFeatureClicked
+                  // AnalyticsEngine.logFeatureClicked('Intruder Alert');
+                  Utils.snackBar('Feature will be avaialble soon.', context);
+
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => IntruderAlert(),
+                  //     ));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -81,7 +103,7 @@ class _HomepageState extends State<Homepage> {
                             ),
                           ),
                           Text(
-                            'capture intruder photos upon unatherrised unlock attept',
+                            'Capture intruder photos upon unatherrised unlock attempt',
                             style: Themetext.greyColortextstyle,
                           )
                         ],
@@ -93,6 +115,8 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
+                  AnalyticsEngine.logFeatureClicked('Do_not_touch_my_phone');
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -146,11 +170,13 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AntiPocketDetection(),
-                      ));
+                  // AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
+                  Utils.snackBar('Feature will be available soon', context);
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => AntiPocketDetection(),
+                  //     ));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -199,6 +225,8 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
+                  AnalyticsEngine.logFeatureClicked('Charging_detection');
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -252,6 +280,8 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
+                  AnalyticsEngine.logFeatureClicked('Wifi_detection');
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -305,6 +335,8 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
+                  AnalyticsEngine.logFeatureClicked('Avoid_over_charging');
+
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -358,12 +390,13 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AirPodsDetection(),
-                      ));
+                  Utils.snackBar('Feature will be avaialble soon.', context);
+                  // AnalyticsEngine.logFeatureClicked('BluetoothConnectionStatus');
+                  // Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => BluetoothConnectionStatus(),
+                  //     ));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -386,7 +419,8 @@ class _HomepageState extends State<Homepage> {
                                 Text(
                                   'AirPhones Detection',
                                   style: Themetext.atextstyle.copyWith(
-                                      fontWeight: FontWeight.w900, fontSize: 16),
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 16),
                                 ),
                                 Icon(
                                   Icons.headphones,
@@ -398,7 +432,7 @@ class _HomepageState extends State<Homepage> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Alarm when battry is fully charged!',
+                              'Alarm when battery is fully charged!',
                               style: Themetext.greyColortextstyle,
                             ),
                           )

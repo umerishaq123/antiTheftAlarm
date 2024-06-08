@@ -5,6 +5,8 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/rating_dialoge.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -17,7 +19,7 @@ class MyDrawer extends StatelessWidget {
   final double width;
   void shareApp() {
     final String appLink =
-        'https://play.google.com/store/apps/details?id=com.nightcoders.careerinfo';
+        'https://play.google.com/store/apps/details?id=com.ginnie.dont.touch.phone.antitheft';
     Share.share('Check out this amazing app: $appLink');
   }
 
@@ -50,12 +52,15 @@ class MyDrawer extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => IntruderAlert(),
-                    ));
+                // Navigator.pop(context);
+                // AnalyticsEngine.logFeatureClicked('Intruder Alert');
+                Utils.snackBar('Feature will be avaialble soon.', context);
+
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => IntruderAlert(),
+                //     ));
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -83,6 +88,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                AnalyticsEngine.logFeatureClicked('Do_not_touch_my_phone');
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -114,13 +120,14 @@ class MyDrawer extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AntiPocketDetection(),
-                    ));
+                // Navigator.pop(context);
+                // AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
+                Utils.snackBar('Feature will be available soon', context);
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => AntiPocketDetection(),
+                //     ));
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,6 +155,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                AnalyticsEngine.logFeatureClicked('Charging_detection');
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -180,6 +188,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                AnalyticsEngine.logFeatureClicked('Wifi_detection');
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -212,6 +221,8 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                AnalyticsEngine.logFeatureClicked('Avoid_over_charging');
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -244,6 +255,13 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                Utils.snackBar('Feature will be avaialble soon.', context);
+                // AnalyticsEngine.logFeatureClicked('BluetoothConnectionStatus');
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //       builder: (context) => BluetoothConnectionStatus(),
+                //     ));
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

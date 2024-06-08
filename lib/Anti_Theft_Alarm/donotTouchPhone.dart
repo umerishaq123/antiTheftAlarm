@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
@@ -42,36 +43,22 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Themecolor.white),
+      ),
       body: SingleChildScrollView(
         child: Container(
           color: Themecolor.white,
           child: Column(
             children: [
               Container(
-                height: height * 0.35,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Themecolor.primary,
-                  // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 55, left: 15),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Themecolor.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  height: height * 0.35,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Themecolor.primary,
+                    // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
+                  ),
+                  child: NativeAdWidget()),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

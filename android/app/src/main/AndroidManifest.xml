@@ -5,9 +5,14 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- for flutter blue --> 
-	 <uses-permission android:name="android.permission.BLUETOOTH" />  
-	 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
-	 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>  
+	<uses-permission android:name="android.permission.BLUETOOTH" />  
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />  
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/> 
+  // <!-- For apps targeting Android 13 or higher & IMA SDK version 3.24.0 or lower -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+    <uses-permission android:name="android.permission.INTERNET"/> <!-- Add this -->
+
+ 
    
     <application
         android:label="Anti Theft Alarm"
@@ -47,5 +52,8 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4161728863134324~2621448732"/>
     </application>
 </manifest>

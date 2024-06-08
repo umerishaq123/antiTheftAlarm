@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "561601266702",
+    "project_id": "anti-theft-ginnie",
+    "storage_bucket": "anti-theft-ginnie.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:561601266702:android:82a8a4886418229d40a85f",
+        "android_client_info": {
+          "package_name": "com.ginnie.dont.touch.phone.antitheft"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVNY76wmK22Ob8PtGfnt3X_tQxXNOVHXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
