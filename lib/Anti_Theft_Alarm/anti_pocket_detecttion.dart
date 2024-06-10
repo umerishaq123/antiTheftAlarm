@@ -1,3 +1,5 @@
+import 'package:antitheftalarm/controller/ad_tracking_services.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
@@ -12,21 +14,18 @@ class AntiPocketDetection extends StatefulWidget {
 class _AntiPocketDetectionState extends State<AntiPocketDetection> {
   bool _switchValue = false;
   bool _stopswitchValue = false;
-  int _selectedIndex = 0;
-  double _sensitivityValue = 0.5;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // Add your navigation logic here based on the index
-      // For example, navigate to different screens or show different content
-    });
+  @override
+  void initState() {
+    AdTrackinServices.incrementAdFrequency();
+    AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -45,8 +44,8 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
                   children: [
                     InkWell(
                       onTap: () {
-                    Navigator.pop(context);
-                  },
+                        Navigator.pop(context);
+                      },
                       child: Padding(
                         padding: const EdgeInsets.only(top: 55, left: 15),
                         child: Icon(
@@ -201,27 +200,12 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
                     SizedBox(
                       height: height * 0.01,
                     ),
-               ],
+                  ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Themecolor.primary,
-        onTap: _onItemTapped,
       ),
     );
   }

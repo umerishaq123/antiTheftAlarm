@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/controller/ad_manager.dart';
+import 'package:antitheftalarm/controller/ad_tracking_services.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/tune_manager.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:battery_plus/battery_plus.dart';
@@ -18,67 +23,35 @@ class AvoidOvercharging extends StatefulWidget {
 class _AvoidOverchargingState extends State<AvoidOvercharging> {
   bool flashlight = false;
   bool vibrate = false;
-  int _selectedIndex = 0;
   final Battery _battery = Battery();
   bool isActivatedPress = false;
   bool isAlarmTriigered = false;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // Add your navigation logic here based on the index
-      // For example, navigate to different screens or show different content
-    });
-  }
-
-  Timer? _batteryCheckTimer;
-  void _startBatteryCheck() {
-    _batteryCheckTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
-      final batteryLevel = await _battery.batteryLevel;
-      if (batteryLevel == 100) {
-        if (isAlarmTriigered == false) {
-          isAlarmTriigered = true;
-          playSound(context, flashlight, vibrate);
-        }
-      }
-    });
+  Timer? batteryCheckTimer;
+  @override
+  void initState() {
+    super.initState();
+    AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    AnalyticsEngine.logFeatureClicked('Avoid_over_charging');
+    AdTrackinServices.incrementAdFrequency();
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Container(
           color: Themecolor.white,
           child: Column(
             children: [
               Container(
-                height: height * 0.35,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Themecolor.primary,
-                  // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 55, left: 15),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Themecolor.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  height: height * 0.35,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Themecolor.primary,
+                  ),
+                  child: NativeAdWidget()),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -246,32 +219,30 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Themecolor.primary,
-        onTap: _onItemTapped,
-      ),
     );
   }
 
-  playSound(BuildContext context, bool torch, bool vibrate) async {
+  void _startBatteryCheck() {
+    batteryCheckTimer = Timer.periodic(Duration(seconds: 3), (timer) async {
+      final batteryLevel = await _battery.batteryLevel;
+      if (batteryLevel == 100) {
+        if (isAlarmTriigered == false) {
+          isAlarmTriigered = true;
+          _playSound(context, flashlight, vibrate);
+        }
+      }
+    });
+  }
+
+  _playSound(BuildContext context, bool torch, bool vibrate) async {
+    AnalyticsEngine.logAlarmActivated('avoid_overcharging');
+    String tunePath = TuneManager.getSelectedTune();
     // Set the device volume to maximum
     VolumeController().maxVolume();
 
     final player = AudioPlayer();
     player.setReleaseMode(ReleaseMode.stop);
-    player.play(AssetSource('alarm.mp3'), volume: 1.0);
-    // await player.setSource(AssetSource('alarm.mp3'));
+    player.play(AssetSource(tunePath), volume: 1.0);
     await player.resume();
 
     // Turn on the flashlight
@@ -282,13 +253,6 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
     } catch (e) {
       print('Could not enable torch: $e');
     }
-    // var hasVibrator = await Vibration.hasVibrator();
-    // // Vibrate the device
-    // if (hasVibrator != null) {
-    //   if (hasVibrator) {
-    //     Vibration.vibrate();
-    //   }
-    // }
     if (vibrate == true) {
       Vibration.vibrate(
         pattern: [

@@ -1,4 +1,9 @@
 import 'dart:async';
+import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/controller/ad_manager.dart';
+import 'package:antitheftalarm/controller/ad_tracking_services.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/tune_manager.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -23,14 +28,15 @@ class _WifiDetectionState extends State<WifiDetection> {
   bool isActivatedPress = false;
   bool _tourch = false;
   bool vibration = false;
-  int _selectedIndex = 0;
   bool isAlarmTriigered = false;
 
   @override
   void initState() {
     super.initState();
+    AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    AdTrackinServices.incrementAdFrequency();
+    AnalyticsEngine.logFeatureClicked('Wifi_detection');
   }
-
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
@@ -65,7 +71,7 @@ class _WifiDetectionState extends State<WifiDetection> {
       // For example, you can call a function to start the alarm
       if (isAlarmTriigered == false) {
         isAlarmTriigered = true;
-        playSound(context, _tourch, vibration);
+        _playSound(context, _tourch, vibration);
       }
     } else {
       print("Connected to WiFi");
@@ -78,47 +84,23 @@ class _WifiDetectionState extends State<WifiDetection> {
     super.dispose();
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // Add your navigation logic here based on the index
-      // For example, navigate to different screens or show different content
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Container(
           color: Themecolor.white,
           child: Column(
             children: [
               Container(
-                height: height * 0.35,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Themecolor.primary,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 55, left: 15),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Themecolor.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  height: height * 0.35,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Themecolor.primary,
+                  ),
+                  child: NativeAdWidget()),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -236,7 +218,6 @@ class _WifiDetectionState extends State<WifiDetection> {
                       ),
                     ),
                     SizedBox(height: height * 0.01),
-                 
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
@@ -303,31 +284,34 @@ class _WifiDetectionState extends State<WifiDetection> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Themecolor.primary,
-        onTap: _onItemTapped,
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.settings),
+      //       label: 'Settings',
+      //     ),
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Themecolor.primary,
+      //   onTap: _onItemTapped,
+      // ),
     );
   }
 
-  playSound(BuildContext context, bool torch, bool vibrate) async {
+  _playSound(BuildContext context, bool torch, bool vibrate) async {
+    String tunePath = TuneManager.getSelectedTune();
+    AnalyticsEngine.logAlarmActivated('Wifi_detection');
+
     // Set the device volume to maximum
     VolumeController().maxVolume();
 
     final player = AudioPlayer();
     player.setReleaseMode(ReleaseMode.stop);
-    player.play(AssetSource('alarm.mp3'), volume: 1.0);
+    player.play(AssetSource(tunePath), volume: 1.0);
     // await player.setSource(AssetSource('alarm.mp3'));
     await player.resume();
 

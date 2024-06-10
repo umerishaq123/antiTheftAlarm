@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/controller/ad_manager.dart';
+import 'package:antitheftalarm/controller/ad_tracking_services.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/tune_manager.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
@@ -20,28 +24,23 @@ class DonotTouchPhone extends StatefulWidget {
 class _DonotTouchPhoneState extends State<DonotTouchPhone> {
   bool _flashlight = false;
   bool vibration = false;
-  int _selectedIndex = 0;
   double _sensitivityValue = 0.5;
   double _threshold = 12.0; // Adjust the threshold for sensitivity
-  StreamSubscription<AccelerometerEvent>? _subscription;
+  StreamSubscription<AccelerometerEvent>? subscription;
   bool isAlarmTriigered = false;
   bool isActivatedPress = false;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   void initState() {
+    AdManager.showInterstitialAd(onComplete: (){}, context: context);
+    AnalyticsEngine.logFeatureClicked('Do_not_touch_my_phone');
+    AdTrackinServices.incrementAdFrequency();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Themecolor.white),
@@ -92,7 +91,7 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                         if (isAlarmTriigered == true) {
                           isAlarmTriigered = false;
                         } else {
-                          _subscription = accelerometerEvents
+                          subscription = accelerometerEvents
                               .listen((AccelerometerEvent event) {
                             double totalAcceleration = sqrt(event.x * event.x +
                                 event.y * event.y +
@@ -291,31 +290,18 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Themecolor.primary,
-        onTap: _onItemTapped,
-      ),
     );
   }
 
   playSound(BuildContext context, bool torch, bool vibrate) async {
+    AnalyticsEngine.logAlarmActivated('Do_not_touch_my_phone');
+    String tunePath = TuneManager.getSelectedTune();
     // Set the device volume to maximum
     VolumeController().maxVolume();
 
     final player = AudioPlayer();
     player.setReleaseMode(ReleaseMode.stop);
-    player.play(AssetSource('alarm.mp3'), volume: 1.0);
+    player.play(AssetSource(tunePath), volume: 1.0);
     // await player.setSource(AssetSource('alarm.mp3'));
     await player.resume();
 
@@ -327,13 +313,7 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
     } catch (e) {
       print('Could not enable torch: $e');
     }
-    // var hasVibrator = await Vibration.hasVibrator();
-    // // Vibrate the device
-    // if (hasVibrator != null) {
-    //   if (hasVibrator) {
-    //     Vibration.vibrate();
-    //   }
-    // }
+
     if (vibrate == true) {
       Vibration.vibrate(
         pattern: [
@@ -402,10 +382,6 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                // setState(() {
-                //   isAlarmTriigered = false;
-                // });
-                // _subscription?.cancel();
                 setState(() {
                   isActivatedPress = false;
                 });

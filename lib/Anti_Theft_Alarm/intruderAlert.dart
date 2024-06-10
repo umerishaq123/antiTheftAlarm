@@ -1,4 +1,6 @@
 import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/controller/ad_tracking_services.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +18,8 @@ class _IntruderAlertState extends State<IntruderAlert> {
 
   @override
   void initState() {
+    AdTrackinServices.incrementAdFrequency();
+    AnalyticsEngine.logFeatureClicked('Intruder Alert');
     super.initState();
   }
 
@@ -23,6 +27,9 @@ class _IntruderAlertState extends State<IntruderAlert> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        iconTheme: IconThemeData(color: Themecolor.white),
+      ),
       backgroundColor: Themecolor.white,
       body: SingleChildScrollView(
         child: Column(
@@ -33,23 +40,7 @@ class _IntruderAlertState extends State<IntruderAlert> {
               decoration: BoxDecoration(
                 color: Themecolor.primary,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 55, left: 15),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Themecolor.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              child: NativeAdWidget(),
             ),
             Container(
               height: height * 0.57,
@@ -141,7 +132,6 @@ class _IntruderAlertState extends State<IntruderAlert> {
                     ),
                   ),
                   SizedBox(height: height * 0.01),
-                  NativeAdWidget(),
                 ],
               ),
             ),

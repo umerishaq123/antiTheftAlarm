@@ -1,19 +1,18 @@
-import 'package:antitheftalarm/Anti_Theft_Alarm/air_pods_ddetction.dart';
-import 'package:antitheftalarm/Anti_Theft_Alarm/anti_pocket_detecttion.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/drawer.dart';
-import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
+import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
-import 'package:antitheftalarm/controller/analytics_engine.dart';
+// import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/controller/utils.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:flutter/material.dart';
 
 class Homepage extends StatefulWidget {
-  bool didItShowedInterestitalAd;
-  Homepage({super.key, required this.didItShowedInterestitalAd});
+  Homepage({
+    super.key,
+  });
 
   @override
   State<Homepage> createState() => _HomepageState();
@@ -23,16 +22,6 @@ class _HomepageState extends State<Homepage> {
   @override
   void initState() {
     super.initState();
-    // Future.delayed(Duration(seconds: 10), () {
-    //   print('::: calling getInterstitialAdButton 1 ');
-    //   if (widget.didItShowedInterestitalAd == false) {
-    //     print('::: calling getInterstitialAdButton 2  ');
-
-    //     AdManager.getInterstitialAdButton(onAdLoaded: (as) {
-    //       print('::: loaded the ad on home');
-    //     });
-    //   }
-    // });
   }
 
   @override
@@ -61,7 +50,6 @@ class _HomepageState extends State<Homepage> {
               InkWell(
                 onTap: () {
                   // logFeatureClicked
-                  // AnalyticsEngine.logFeatureClicked('Intruder Alert');
                   Utils.snackBar('Feature will be avaialble soon.', context);
 
                   // Navigator.push(
@@ -115,13 +103,16 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  AnalyticsEngine.logFeatureClicked('Do_not_touch_my_phone');
-
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DonotTouchPhone(),
-                      ));
+                  // AdManager.showInterstitialAd(
+                  //     onComplete: () {
+                       
+                  //     },
+                  //     context: context);
+                   Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DonotTouchPhone(),
+                            ));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -170,7 +161,6 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  // AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
                   Utils.snackBar('Feature will be available soon', context);
                   // Navigator.push(
                   //     context,
@@ -225,8 +215,6 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  AnalyticsEngine.logFeatureClicked('Charging_detection');
-
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -280,8 +268,6 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  AnalyticsEngine.logFeatureClicked('Wifi_detection');
-
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -335,8 +321,6 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  AnalyticsEngine.logFeatureClicked('Avoid_over_charging');
-
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -417,7 +401,7 @@ class _HomepageState extends State<Homepage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'AirPhones Detection',
+                                  'Air Phones Detection',
                                   style: Themetext.atextstyle.copyWith(
                                       fontWeight: FontWeight.w900,
                                       fontSize: 16),
@@ -444,6 +428,7 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
+      bottomNavigationBar: NativeAdWidget(),
     );
   }
 }

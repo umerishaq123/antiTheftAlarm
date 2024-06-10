@@ -1,5 +1,7 @@
 import 'package:antitheftalarm/Anti_Theft_Alarm/splash_screen.dart';
 import 'package:antitheftalarm/controller/ad_manager.dart';
+import 'package:antitheftalarm/controller/remote_config_services.dart';
+import 'package:antitheftalarm/controller/tune_manager.dart';
 import 'package:antitheftalarm/firebase_options.dart';
 import 'package:antitheftalarm/theme/theme_light.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,7 +12,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  AdManager.init(); // Initialize Google AdMob
+  await AdManager.init(); // Initialize Google AdMob
+
+  await Config.initConfig(); // Initialize remote config
+
+  await TuneManager.init();
 
   runApp(const MyApp());
 }

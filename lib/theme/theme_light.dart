@@ -15,6 +15,7 @@ class Themelight {
   );
   static AppBarTheme appbar_theme = const AppBarTheme(
       backgroundColor: Themecolor.primary,
+      iconTheme: IconThemeData(color: Themecolor.white),
       titleTextStyle: TextStyle(color: Colors.white));
 
   static ElevatedButtonThemeData elevatedbuttontheme = ElevatedButtonThemeData(

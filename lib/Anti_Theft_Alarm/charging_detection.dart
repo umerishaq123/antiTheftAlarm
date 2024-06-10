@@ -1,5 +1,9 @@
 import 'dart:async';
-
+import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/controller/ad_manager.dart';
+import 'package:antitheftalarm/controller/ad_tracking_services.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/tune_manager.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -30,8 +34,12 @@ class _ChargingDetectionState extends State<ChargingDetection> {
   @override
   void initState() {
     super.initState();
+    AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    AdTrackinServices.incrementAdFrequency();
+    AnalyticsEngine.logFeatureClicked('Charging_detection');
     // Subscribe to battery state changes
-    _batterySubscription = _battery.onBatteryStateChanged.listen((BatteryState state) {
+    _batterySubscription =
+        _battery.onBatteryStateChanged.listen((BatteryState state) {
       setState(() {
         _batteryState = state;
       });
@@ -61,6 +69,7 @@ class _ChargingDetectionState extends State<ChargingDetection> {
 
   void _activateAlarm() {
     if (_batteryState == BatteryState.charging) {
+      AnalyticsEngine.logAlarmActivated('charging_detection');
       setState(() {
         isActivatedPress = true;
         isAlarmTriggered = false;
@@ -72,35 +81,19 @@ class _ChargingDetectionState extends State<ChargingDetection> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Container(
           color: Themecolor.white,
           child: Column(
             children: [
               Container(
-                height: height * 0.35,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Themecolor.primary,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 55, left: 15),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Themecolor.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  height: height * 0.35,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Themecolor.primary,
+                  ),
+                  child: NativeAdWidget()),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -151,8 +144,8 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                       _batteryState == BatteryState.charging
                           ? 'Charger Connected'
                           : 'Please connect charger',
-                      style: Themetext.atextstyle.copyWith(
-                          fontWeight: FontWeight.bold),
+                      style: Themetext.atextstyle
+                          .copyWith(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: height * 0.01,
@@ -274,12 +267,14 @@ class _ChargingDetectionState extends State<ChargingDetection> {
   }
 
   playSound(BuildContext context, bool torch, bool vibrate) async {
+    AnalyticsEngine.logAlarmActivated('Charging_detection');
+    String tunePath = TuneManager.getSelectedTune();
     // Set the device volume to maximum
     VolumeController().maxVolume();
 
     final player = AudioPlayer();
     player.setReleaseMode(ReleaseMode.stop);
-    player.play(AssetSource('alarm.mp3'), volume: 1.0);
+    player.play(AssetSource(tunePath), volume: 1.0);
     await player.resume();
 
     // Turn on the flashlight

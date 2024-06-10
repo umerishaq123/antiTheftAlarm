@@ -4,6 +4,8 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/rating_dialoge.dart';
+import 'package:antitheftalarm/Anti_Theft_Alarm/settings_screen.dart';
+import 'package:antitheftalarm/Anti_Theft_Alarm/tune_selection_screen.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/controller/utils.dart';
@@ -43,6 +45,40 @@ class MyDrawer extends StatelessWidget {
             ],
           ),
           Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                // AnalyticsEngine.logFeatureClicked('Intruder Alert');
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TuneSelectionPage(),
+                    ));
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Leading widget
+                  Row(
+                    children: [
+                      Icon(Icons.settings),
+                      // Text widget as the button label
+                      Padding(
+                        padding: const EdgeInsets.only(left: 18.0),
+                        child: Text('Settings'),
+                      ),
+                    ],
+                  ),
+
+                  // Trailing widget
+                  Icon(Icons.arrow_forward_ios),
+                ],
+              ),
+            ),
+          ),
+          Padding(
               padding: EdgeInsets.all(12),
               child: Text(
                 'Features',
@@ -52,7 +88,7 @@ class MyDrawer extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
               onPressed: () {
-                // Navigator.pop(context);
+                Navigator.pop(context);
                 // AnalyticsEngine.logFeatureClicked('Intruder Alert');
                 Utils.snackBar('Feature will be avaialble soon.', context);
 
@@ -120,7 +156,7 @@ class MyDrawer extends StatelessWidget {
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
               onPressed: () {
-                // Navigator.pop(context);
+                Navigator.pop(context);
                 // AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
                 Utils.snackBar('Feature will be available soon', context);
                 // Navigator.push(
