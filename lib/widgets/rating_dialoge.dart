@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class RatingDialog extends StatelessWidget {
   final String appStoreUrl =
-      'https://play.google.com/store/apps/details?id=com.nightcoders.careerinfo';
+      'https://play.google.com/store/apps/details?id=com.ginnie.dont.touch.phone.antitheft';
   final String feedbackEmail = 'feedback@yourapp.com';
   final String feedbackSubject = 'App Feedback';
 

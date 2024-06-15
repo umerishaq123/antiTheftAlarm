@@ -2,63 +2,66 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-4161728863134324~5341483987</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Needs access to internet for connectivity check</string>
     <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>We need Bluetooth access for Bluetooth functionality.</string>
-    <key>NSBluetoothPeripheralUsageDescription</key>
     <string>We need Bluetooth access for Bluetooth functionality.</string>
     <key>NSBluetoothPeripheralUsageDescription</key>
     <string>We need Bluetooth access for Bluetooth functionality.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>We need your location for Bluetooth functionality.</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>We need your location for Bluetooth functionality.</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>Anti Theft Alarm</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>Anti Theft Alarm</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<key>LSApplicationQueriesSchemes</key>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>Anti Theft Alarm</string>
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.ginnie.dont.touch.phone.antitheft</string> <!-- Replace with your actual Bundle Identifier -->
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>Anti Theft Alarm</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string> <!-- Replace with your Flutter build name -->
+    <key>CFBundleVersion</key>
+    <string>1</string> <!-- Replace with your Flutter build number -->
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIMainStoryboardFile</key>
+    <string>Main</string>
+    <key>UISupportedInterfaceOrientations</key>
     <array>
-      <string>sms</string>
-      <string>tel</string>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
-	<true/>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>CADisableMinimumFrameDurationOnPhone</key>
+    <true/>
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>sms</string>
+        <string>tel</string>
+    </array>
 </dict>
 </plist>

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/controller/ad_tracking_services.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
@@ -32,12 +32,13 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
 
   @override
   void initState() {
+    super.initState();
+
     AnalyticsEngine.logFeatureClicked('Do_not_touch_my_phone');
     AdTrackinServices.incrementAdFrequency();
     Future.microtask(() {
       AdManager.showInterstitialAd(onComplete: () {}, context: context);
     });
-    super.initState();
   }
 
   @override
@@ -53,12 +54,12 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
           child: Column(
             children: [
               Container(
-                  height: height * 0.35,
+                  // height: height * 0.35,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Themecolor.primary,
-                    // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
-                  ),
+                      // color: Themecolor.primary,
+                      // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
+                      ),
                   child: NativeAdWidget()),
               Container(
                 width: double.infinity,
@@ -101,6 +102,7 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                             if (totalAcceleration > _threshold) {
                               if (isAlarmTriigered == false) {
                                 isAlarmTriigered = true;
+                                print('::: play sound');
                                 playSound(
                                   context,
                                   _flashlight,
@@ -246,8 +248,6 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                                 'Please adjust  sensitivity for motion detection ',
                                 style: Themetext.greyColortextstyle,
                               ),
-
-                          
                               Slider(
                                 value: _sensitivityValue,
                                 min: 0,
@@ -382,5 +382,11 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    subscription?.cancel(); // Cancel accelerometer subscription
+    super.dispose();
   }
 }

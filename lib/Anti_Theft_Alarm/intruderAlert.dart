@@ -1,4 +1,4 @@
-import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/controller/ad_tracking_services.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';

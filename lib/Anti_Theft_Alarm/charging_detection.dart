@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/controller/ad_tracking_services.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
@@ -89,10 +89,10 @@ class _ChargingDetectionState extends State<ChargingDetection> {
           child: Column(
             children: [
               Container(
-                  height: height * 0.35,
+                  // height: height * 0.35,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Themecolor.primary,
+                    // color: Themecolor.primary,
                   ),
                   child: NativeAdWidget()),
               Container(

@@ -40,9 +40,37 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
           },
         ),
         request: const AdRequest(),
+        // Styling
+        // nativeTemplateStyle: NativeTemplateStyle(
+        //   // Required: Choose a template.
+        //   templateType: TemplateType.medium,
+        //   // Optional: Customize the ad's style.
+        //   mainBackgroundColor: Colors.purple,
+        //   cornerRadius: 10.0,
+        //   callToActionTextStyle: NativeTemplateTextStyle(
+        //       textColor: Colors.cyan,
+        //       backgroundColor: Colors.red,
+        //       style: NativeTemplateFontStyle.monospace,
+        //       size: 16.0),
+        //   primaryTextStyle: NativeTemplateTextStyle(
+        //       textColor: Colors.red,
+        //       backgroundColor: Colors.cyan,
+        //       style: NativeTemplateFontStyle.italic,
+        //       size: 16.0),
+        //   secondaryTextStyle: NativeTemplateTextStyle(
+        //       textColor: Colors.green,
+        //       backgroundColor: Colors.black,
+        //       style: NativeTemplateFontStyle.bold,
+        //       size: 16.0),
+        //   tertiaryTextStyle: NativeTemplateTextStyle(
+        //       textColor: Colors.brown,
+        //       backgroundColor: Colors.amber,
+        //       style: NativeTemplateFontStyle.normal,
+        //       size: 16.0),
+        // ),
+    
       );
       _nativeAd?.load();
-     
     }
   }
 
@@ -55,11 +83,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
   @override
   Widget build(BuildContext context) {
     return Config.hideAds // Check if ads should be hidden
-        ? Container(
-            height: 200,
-            padding: EdgeInsets.all(12),
-            child: Image.asset('assets/images/app_icon.png'),
-          )
+        ? SizedBox()
         : _nativeAdIsLoaded
             ? Container(
                 margin: EdgeInsets.all(12),
@@ -74,11 +98,15 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
                 child: AdWidget(ad: _nativeAd!),
               )
             : Container(
+                margin: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(
+                    color: Colors.red, // Border color
+                    width: 3.0, // Border width
+                  ),
+                ),
                 height: 200,
-                padding: EdgeInsets.all(12),
-                child: Center(
-                    child:
-                        CircularProgressIndicator()), // Placeholder while loading ad
-              );
+                child: Text('Loading Ads'));
   }
 }

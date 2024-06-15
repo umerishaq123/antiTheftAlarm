@@ -2,6 +2,7 @@ import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/controller/ad_tracking_services.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
+import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +27,8 @@ class _TuneSelectionPageState extends State<TuneSelectionPage> {
     super.initState();
     Future.microtask(() {
       AdManager.showInterstitialAd(onComplete: () {}, context: context);
-    });    AnalyticsEngine.logFeatureClicked('TuneSelectionPage');
+    });
+    AnalyticsEngine.logFeatureClicked('TuneSelectionPage');
     AdTrackinServices.incrementAdFrequency();
     _audioPlayer = AudioPlayer();
     // Provide a default value for _selectedTune
@@ -67,51 +69,83 @@ class _TuneSelectionPageState extends State<TuneSelectionPage> {
         iconTheme: IconThemeData(color: Themecolor.white),
         title: Text('Select Tune'),
       ),
-      body: ListView.builder(
-        itemCount: tunes.length,
-        itemBuilder: (context, index) {
-          String tunePath = tunes[index];
-          bool isSelected = _selectedTune == tunePath;
-          return ListTile(
-            title: Text(tunePath.split('/').last),
-            leading: Radio(
-              value: tunePath,
-              groupValue: _selectedTune,
-              onChanged: (String? value) {
-                _saveTune(tunePath); // Save the tune
-              },
-            ),
-            onTap: () {
-              _playTune(tunePath); // Play the tune when clicked
-              showDialog(
-                barrierDismissible: false,
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text('Tune Options'),
-                    content: Text('Do you want to save this tune?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          _stopTune(); // Stop the tune
-                          Navigator.pop(context);
-                        },
-                        child: Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _saveTune(tunePath); // Save the tune
-                          _stopTune(); // Stop the tune
-                        },
-                        child: Text('Save'),
-                      ),
-                    ],
+      body: Column(
+        children: [
+          NativeAdWidget(),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: tunes.length,
+            itemBuilder: (context, index) {
+              String tunePath = tunes[index];
+              bool isSelected = _selectedTune == tunePath;
+              return ListTile(
+                title: Text(tunePath.split('/').last),
+                leading: Radio(
+                  value: tunePath,
+                  groupValue: _selectedTune,
+                  onChanged: (String? value) {
+                    _playTune(tunePath); // Play the tune when clicked
+                    showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Tune Options'),
+                          content: Text('Do you want to save this tune?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                _stopTune(); // Stop the tune
+                                Navigator.pop(context);
+                              },
+                              child: Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                _saveTune(tunePath); // Save the tune
+                                _stopTune(); // Stop the tune
+                              },
+                              child: Text('Save'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                ),
+                onTap: () {
+                  _playTune(tunePath); // Play the tune when clicked
+                  showDialog(
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Tune Options'),
+                        content: Text('Do you want to save this tune?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              _stopTune(); // Stop the tune
+                              Navigator.pop(context);
+                            },
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _saveTune(tunePath); // Save the tune
+                              _stopTune(); // Stop the tune
+                            },
+                            child: Text('Save'),
+                          ),
+                        ],
+                      );
+                    },
                   );
                 },
               );
             },
-          );
-        },
+          ),
+        ],
       ),
     );
   }

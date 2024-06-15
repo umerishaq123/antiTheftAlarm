@@ -2,15 +2,14 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/anti_pocket_detecttion.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
-import 'package:antitheftalarm/Anti_Theft_Alarm/intruderAlert.dart';
-import 'package:antitheftalarm/Anti_Theft_Alarm/rating_dialoge.dart';
+import 'package:antitheftalarm/widgets/rating_dialoge.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/settings_screen.dart';
-import 'package:antitheftalarm/Anti_Theft_Alarm/tune_selection_screen.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/controller/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({
@@ -24,7 +23,24 @@ class MyDrawer extends StatelessWidget {
         'https://play.google.com/store/apps/details?id=com.ginnie.dont.touch.phone.antitheft';
     Share.share('Check out this amazing app: $appLink');
   }
-
+    // Function to launch privacy policy URL
+  void _launchPrivacyPolicyURL() async {
+    const url = 'https://ginnieworks.blogspot.com/p/privacy-policy.html?m=1';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+  _launchPlayStore() async {
+    final url =
+        'https://play.google.com/store/apps/developer?id=GinnieWorks';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch Play Store';
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -54,7 +70,7 @@ class MyDrawer extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => TuneSelectionPage(),
+                      builder: (context) => SettingsPage(),
                     ));
               },
               child: Row(
@@ -386,6 +402,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                _launchPrivacyPolicyURL();
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

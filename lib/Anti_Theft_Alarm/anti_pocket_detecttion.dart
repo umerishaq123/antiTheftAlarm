@@ -127,16 +127,17 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
 
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Container(
           color: Themecolor.white,
           child: Column(
             children: [
               Container(
-                height: height * 0.35,
+                // height: height * 0.35,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Themecolor.primary,
+                  // color: Themecolor.primary,
                   // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
                 ),
                 child: Column(
