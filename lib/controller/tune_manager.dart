@@ -12,7 +12,7 @@ class TuneManager {
     final selectedTune = _prefs.getString('selected_tune');
 
     // Return the selected tune if available, otherwise return the default tune
-    return selectedTune ?? 'assets/alarm.mp3';
+    return selectedTune ?? 'alarm.mp3';
   }
 
   static Future<void> setSelectedTune(String tunePath) async {

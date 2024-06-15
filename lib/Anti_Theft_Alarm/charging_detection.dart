@@ -34,8 +34,9 @@ class _ChargingDetectionState extends State<ChargingDetection> {
   @override
   void initState() {
     super.initState();
-    AdManager.showInterstitialAd(onComplete: () {}, context: context);
-    AdTrackinServices.incrementAdFrequency();
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    });    AdTrackinServices.incrementAdFrequency();
     AnalyticsEngine.logFeatureClicked('Charging_detection');
     // Subscribe to battery state changes
     _batterySubscription =

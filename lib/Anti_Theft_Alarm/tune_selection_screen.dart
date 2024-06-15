@@ -24,8 +24,9 @@ class _TuneSelectionPageState extends State<TuneSelectionPage> {
   @override
   void initState() {
     super.initState();
-    AdManager.showInterstitialAd(onComplete: () {}, context: context);
-    AnalyticsEngine.logFeatureClicked('TuneSelectionPage');
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    });    AnalyticsEngine.logFeatureClicked('TuneSelectionPage');
     AdTrackinServices.incrementAdFrequency();
     _audioPlayer = AudioPlayer();
     // Provide a default value for _selectedTune

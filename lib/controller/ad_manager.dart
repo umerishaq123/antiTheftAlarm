@@ -13,8 +13,11 @@ class AdManager {
 
   static var nativeAdRealId = 'ca-app-pub-4161728863134324/8496591945';
 
-  static var interstitialAdRealId = 'ca-app-pub-4161728863134324/2286406818';
-  static var interstitialAdTestId = "ca-app-pub-7319269804560504/6941421099";
+  // static var interstitialAdRealId = 'ca-app-pub-4161728863134324/2286406818';
+  // static var interstitialAdTestId = "ca-app-pub-7319269804560504/6941421099";
+  static var interstitialAdTestId = Platform.isAndroid
+      ? 'ca-app-pub-3940256099942544/1033173712'
+      : 'ca-app-pub-3940256099942544/4411468910';
 
   // for initializing ads sdk
   static Future<void> init() async {
@@ -51,7 +54,6 @@ class AdManager {
             // Get.back();
             Navigator.pop(context);
             ad.show();
-           
           },
           onAdFailedToLoad: (err) {
             Navigator.pop(context);
@@ -133,18 +135,24 @@ class AdManager {
 
 class MyDialogs {
   static void showProgress(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: Center(
-            child: CircularProgressIndicator(strokeWidth: 2),
+  showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return Center(
+        child: FractionallySizedBox(
+          widthFactor: 0.8, // Adjust the width fraction as needed
+          heightFactor: 0.2, // Adjust the height fraction as needed
+          child: Dialog(
+            // backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: Center(
+              child: Text('Ad is loading...'),
+            ),
           ),
-        );
-      },
-    );
+        ),
+      );
+    },
+  );
   }
 }

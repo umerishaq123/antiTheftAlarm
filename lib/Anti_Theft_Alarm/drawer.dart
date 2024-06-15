@@ -124,7 +124,6 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                AnalyticsEngine.logFeatureClicked('Do_not_touch_my_phone');
                 Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -157,13 +156,11 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                // AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
-                Utils.snackBar('Feature will be available soon', context);
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => AntiPocketDetection(),
-                //     ));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AntiPocketDetection(),
+                    ));
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

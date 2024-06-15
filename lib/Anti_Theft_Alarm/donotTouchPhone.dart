@@ -32,9 +32,11 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
 
   @override
   void initState() {
-    AdManager.showInterstitialAd(onComplete: (){}, context: context);
     AnalyticsEngine.logFeatureClicked('Do_not_touch_my_phone');
     AdTrackinServices.incrementAdFrequency();
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    });
     super.initState();
   }
 
@@ -245,23 +247,7 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                                 style: Themetext.greyColortextstyle,
                               ),
 
-                              // Slider(
-                              //   value: _sensitivityValue,
-                              //   min: 0,
-                              //   max: 1,
-                              //   divisions: 10,
-                              //   label: (_sensitivityValue * 100)
-                              //       .round()
-                              //       .toString(),
-                              //   onChanged: (value) {
-                              //     setState(() {
-                              //       _sensitivityValue = value;
-                              //       // Update the threshold based on sensitivity value
-                              //       _threshold = 20 - (value * 20);
-                              //       print('::::_threshold $_threshold');
-                              //     });
-                              //   },
-                              // ),
+                          
                               Slider(
                                 value: _sensitivityValue,
                                 min: 0,

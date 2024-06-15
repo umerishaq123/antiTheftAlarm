@@ -33,7 +33,9 @@ class _WifiDetectionState extends State<WifiDetection> {
   @override
   void initState() {
     super.initState();
-    AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    });
     AdTrackinServices.incrementAdFrequency();
     AnalyticsEngine.logFeatureClicked('Wifi_detection');
   }

@@ -1,4 +1,5 @@
 import 'package:antitheftalarm/Anti_Theft_Alarm/native_ad_widget.dart';
+import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/controller/ad_tracking_services.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
@@ -20,6 +21,9 @@ class _IntruderAlertState extends State<IntruderAlert> {
   void initState() {
     AdTrackinServices.incrementAdFrequency();
     AnalyticsEngine.logFeatureClicked('Intruder Alert');
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    });
     super.initState();
   }
 

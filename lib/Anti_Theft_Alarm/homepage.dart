@@ -1,3 +1,4 @@
+import 'package:antitheftalarm/Anti_Theft_Alarm/anti_pocket_detecttion.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
@@ -161,12 +162,11 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  Utils.snackBar('Feature will be available soon', context);
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => AntiPocketDetection(),
-                  //     ));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AntiPocketDetection(),
+                      ));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

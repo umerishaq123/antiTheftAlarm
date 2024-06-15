@@ -30,7 +30,9 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
   @override
   void initState() {
     super.initState();
-    AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    });
     AnalyticsEngine.logFeatureClicked('Avoid_over_charging');
     AdTrackinServices.incrementAdFrequency();
   }

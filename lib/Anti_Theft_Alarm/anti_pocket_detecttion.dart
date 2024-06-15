@@ -1,8 +1,18 @@
+import 'dart:async';
+import 'dart:developer';
+import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/controller/ad_tracking_services.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/tune_manager.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:proximity_sensor/proximity_sensor.dart';
+import 'package:sensors_plus/sensors_plus.dart';
+import 'package:torch_light/torch_light.dart';
+import 'package:vibration/vibration.dart';
+import 'package:volume_controller/volume_controller.dart';
 
 class AntiPocketDetection extends StatefulWidget {
   const AntiPocketDetection({super.key});
@@ -12,19 +22,109 @@ class AntiPocketDetection extends StatefulWidget {
 }
 
 class _AntiPocketDetectionState extends State<AntiPocketDetection> {
-  bool _switchValue = false;
-  bool _stopswitchValue = false;
+  bool _flashlight = false;
+  bool vibration = false;
+  bool isAlarmTriigered = false;
+  bool isActivatedPress = false;
+  Timer? _timer;
+  int _countdown = 3;
+  bool _isListening = false;
+// for sensor
+  bool _isNear = false;
+  double _accelerometerValueX = 0.0;
+  double _accelerometerValueY = 0.0;
+  double _accelerometerValueZ = 0.0;
+  String _orientation = 'Unknown';
 
   @override
   void initState() {
     AdTrackinServices.incrementAdFrequency();
     AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
-
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
+    });
     super.initState();
+  }
+
+  void startDetection() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_countdown > 0) {
+          _countdown--;
+        } else {
+          _timer?.cancel();
+          _isListening = true;
+
+          // Start sensor listeners
+          ProximitySensor.events.listen((int event) {
+            setState(() {
+              _isNear = (event > 0);
+            });
+          });
+
+          accelerometerEvents.listen((AccelerometerEvent event) {
+            setState(() {
+              _accelerometerValueX = event.x;
+              _accelerometerValueY = event.y;
+              _accelerometerValueZ = event.z;
+
+              // Determine the orientation of the device
+              if (_accelerometerValueZ.abs() > 9.0 &&
+                  _accelerometerValueX.abs() < 2.0 &&
+                  _accelerometerValueY.abs() < 2.0) {
+                _orientation = 'Flat';
+              } else if (_accelerometerValueX.abs() > 9.0 &&
+                  _accelerometerValueY.abs() < 2.0 &&
+                  _accelerometerValueZ.abs() < 2.0) {
+                _orientation =
+                    _accelerometerValueX > 0 ? 'Left Side' : 'Right Side';
+              } else if (_accelerometerValueY.abs() > 9.0 &&
+                  _accelerometerValueX.abs() < 2.0 &&
+                  _accelerometerValueZ.abs() < 2.0) {
+                _orientation =
+                    _accelerometerValueY > 0 ? 'Upright' : 'Upside Down';
+              } else {
+                _orientation = 'Unknown';
+              }
+            });
+
+            bool isInPocketMode = _isNear ||
+                ((_accelerometerValueZ.abs() > 9.0 &&
+                        _accelerometerValueX.abs() < 2.0 &&
+                        _accelerometerValueY.abs() < 2.0) || // Flat
+                    (_accelerometerValueX.abs() > 9.0 &&
+                        _accelerometerValueY.abs() < 2.0 &&
+                        _accelerometerValueZ.abs() < 2.0) || // Left or Right
+                    (_accelerometerValueY.abs() > 9.0 &&
+                        _accelerometerValueX.abs() < 2.0 &&
+                        _accelerometerValueZ.abs() < 2.0)); // Up or Down
+
+            if (_isListening && !isInPocketMode) {
+              _isListening = false;
+              playSound(context, _flashlight, vibration);
+            }
+          });
+        }
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isInPocketMode = _isNear ||
+        ((_accelerometerValueZ.abs() > 9.0 &&
+                _accelerometerValueX.abs() < 2.0 &&
+                _accelerometerValueY.abs() < 2.0) || // Flat
+            (_accelerometerValueX.abs() > 9.0 &&
+                _accelerometerValueY.abs() < 2.0 &&
+                _accelerometerValueZ.abs() < 2.0) || // Left or Right
+            (_accelerometerValueY.abs() > 9.0 &&
+                _accelerometerValueX.abs() < 2.0 &&
+                _accelerometerValueZ.abs() < 2.0)); // Up or Down
+
+    log('::: isInPocketMode $isInPocketMode');
+    log('::: Orientation $_orientation');
+
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: SingleChildScrollView(
@@ -82,21 +182,36 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
                       height: height * 0.01,
                     ),
                     Center(
-                        child: CircleAvatar(
-                      backgroundColor: Themecolor.black,
-                      child: Text(
-                        'Activate',
-                        style: Themetext.ctextstyle,
+                        child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          isActivatedPress = true;
+                        });
+                        if (isAlarmTriigered == true) {
+                          isAlarmTriigered = false;
+                        } else {
+                          startDetection();
+                        }
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Themecolor.black,
+                        child: Text(
+                          'Activate',
+                          style: Themetext.ctextstyle,
+                        ),
+                        maxRadius: 45,
                       ),
-                      maxRadius: 45,
                     )),
                     SizedBox(
                       height: height * 0.01,
                     ),
-                    Text(
-                      'Tap to Activate',
-                      style: Themetext.atextstyle
-                          .copyWith(fontWeight: FontWeight.bold),
+                   Text(
+                      isActivatedPress
+                          ? _countdown > 0
+                              ? 'Activating in $_countdown...'
+                              : 'Activated'
+                          : 'Activate',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
                       height: height * 0.01,
@@ -130,10 +245,10 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _switchValue,
+                            value: _flashlight,
                             onChanged: (value) {
                               setState(() {
-                                _switchValue = value;
+                                _flashlight = value;
                               });
                             },
                           ),
@@ -163,10 +278,10 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _stopswitchValue,
+                            value: vibration,
                             onChanged: (value) {
                               setState(() {
-                                _stopswitchValue = value;
+                                vibration = value;
                               });
                             },
                           ),
@@ -207,6 +322,113 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
           ),
         ),
       ),
+    );
+  }
+
+  playSound(BuildContext context, bool torch, bool vibrate) async {
+    AnalyticsEngine.logAlarmActivated('Anti_Pocket_Detection');
+    String tunePath = TuneManager.getSelectedTune();
+    // Set the device volume to maximum
+    VolumeController().maxVolume();
+
+    final player = AudioPlayer();
+    player.setReleaseMode(ReleaseMode.stop);
+    player.play(AssetSource(tunePath), volume: 1.0);
+    // await player.setSource(AssetSource('alarm.mp3'));
+    await player.resume();
+
+    // Turn on the flashlight
+    try {
+      if (torch == true) {
+        await TorchLight.enableTorch();
+      }
+    } catch (e) {
+      print('Could not enable torch: $e');
+    }
+
+    if (vibrate == true) {
+      Vibration.vibrate(
+        pattern: [
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+        ],
+        intensities: [
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255
+        ],
+      );
+    }
+
+    // Show alert dialog to stop the sound
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alarm Playing'),
+          content: Text('The alarm is playing. Do you want to stop it?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  isActivatedPress = false;
+                  _isListening = false;
+                  _countdown = 3;
+                });
+                await player.stop();
+                await TorchLight.disableTorch();
+                Vibration.cancel();
+                Navigator.of(context).pop();
+              },
+              child: Text('Stop Alarm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
