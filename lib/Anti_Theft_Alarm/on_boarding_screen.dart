@@ -2,7 +2,6 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/homepage.dart';
 import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({super.key});
@@ -84,8 +83,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   Future<void> _completeOnboarding() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('seenOnboarding', true);
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // await prefs.setBool('seenOnboarding', true);
     AdManager.showInterstitialAdOnSplash(
         onComplete: () {
           Navigator.pushReplacement(

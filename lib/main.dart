@@ -1,3 +1,4 @@
+import 'package:antitheftalarm/Anti_Theft_Alarm/on_boarding_screen.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/splash_screen.dart';
 import 'package:antitheftalarm/controller/ad_manager.dart';
 import 'package:antitheftalarm/controller/remote_config_services.dart';
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: Themelight.light_theme,
       title: 'Anti Theft Alarm',
-      home: SplashScreen(),
+      home: OnBoardingScreen(),
     );
   }
 }

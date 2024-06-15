@@ -1,33 +1,215 @@
+import 'package:flutter/material.dart';
+import 'package:headset_connection_event/headset_event.dart';
+import 'package:torch_light/torch_light.dart';
+import 'package:vibration/vibration.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:volume_controller/volume_controller.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
-import 'package:flutter/material.dart';
+import 'package:antitheftalarm/controller/tune_manager.dart';
+import 'package:antitheftalarm/controller/analytics_engine.dart';
+import 'package:antitheftalarm/controller/ad_tracking_services.dart';
+import 'package:antitheftalarm/controller/ad_manager.dart';
 
 class AirphonesDetection extends StatefulWidget {
-  const AirphonesDetection({super.key});
+  const AirphonesDetection({Key? key}) : super(key: key);
 
   @override
   State<AirphonesDetection> createState() => _AirphonesDetectionState();
 }
 
 class _AirphonesDetectionState extends State<AirphonesDetection> {
-  bool _switchValue = false;
-  bool _stopswitchValue = false;
-  int _selectedIndex = 0;
-  double _sensitivityValue = 0.5;
+  bool _flashlight = false;
+  bool vibration = false;
+  bool isActivatedPress = false;
+  bool isHeadsetConnected = false;
+  bool isAlarmTriggered = false;
+  bool isAlarmPlaying = false;
+  final player = AudioPlayer();
+  late BuildContext alarmDialogContext; // To keep track of dialog context
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // Add your navigation logic here based on the index
-      // For example, navigate to different screens or show different content
+  final _headsetPlugin = HeadsetEvent();
+  HeadsetState? headsetState;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _headsetPlugin.requestPermission();
+    _initHeadsetState();
+  }
+
+  void _initHeadsetState() {
+    _headsetPlugin.getCurrentState.then((currentState) {
+      setState(() {
+        headsetState = currentState;
+        isHeadsetConnected = currentState == HeadsetState.CONNECT;
+      });
+    });
+
+    _headsetPlugin.setListener((newState) {
+      setState(() {
+        headsetState = newState;
+        isHeadsetConnected = newState == HeadsetState.CONNECT;
+
+        if (isActivatedPress &&
+            newState == HeadsetState.DISCONNECT &&
+            !isAlarmPlaying) {
+          _triggerAlarm();
+        } else if (newState == HeadsetState.CONNECT) {
+          _stopAlarm();
+        }
+      });
+    });
+
+    AdTrackinServices.incrementAdFrequency();
+    AnalyticsEngine.logFeatureClicked('head_set_detected');
+    Future.microtask(() {
+      AdManager.showInterstitialAd(onComplete: () {}, context: context);
     });
   }
-  
+
+  void _triggerAlarm() {
+    if (!isActivatedPress || isAlarmTriggered) return;
+
+    setState(() {
+      isAlarmTriggered = true;
+      isAlarmPlaying = true;
+    });
+
+    _playAlarm();
+  }
+
+  void _playAlarm() async {
+    AnalyticsEngine.logAlarmActivated('head_set_alarm');
+    String tunePath = TuneManager.getSelectedTune();
+    VolumeController().maxVolume();
+
+    player.setReleaseMode(ReleaseMode.stop);
+    await player.play(AssetSource(tunePath), volume: 1.0);
+
+    try {
+      if (_flashlight) {
+        await TorchLight.enableTorch();
+      }
+    } catch (e) {
+      print('Could not enable torch: $e');
+    }
+
+    if (vibration) {
+      Vibration.vibrate(
+        pattern: [
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+        ],
+        intensities: [
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+        ],
+      );
+    }
+
+    // Show alert dialog to stop the sound
+    _showStopDialog();
+  }
+
+  void _stopAlarm() async {
+    if (!isAlarmPlaying) return;
+
+    setState(() {
+      isActivatedPress = false;
+      isAlarmTriggered = false;
+      isAlarmPlaying = false;
+    });
+
+    await player.stop();
+    await TorchLight.disableTorch();
+    Vibration.cancel();
+
+    // Dismiss the dialog if it's open
+    Navigator.of(alarmDialogContext).pop();
+  }
+
+  void _showStopDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        // Keep the context to dismiss the dialog later
+        alarmDialogContext = context;
+
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: AlertDialog(
+            title: Text('Alarm Playing'),
+            content: Text('The alarm is playing. Do you want to stop it?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  _stopAlarm();
+                },
+                child: Text('Stop Alarm'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    player.dispose(); // Dispose of the audio player when no longer needed
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -35,15 +217,14 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
             Container(
               height: height * 0.35,
               width: double.infinity,
-              decoration:const BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Themecolor.primary,
-                // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
               ),
-              child:const Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 55, left: 15),
+                    padding: EdgeInsets.only(top: 55, left: 15),
                     child: Icon(
                       Icons.arrow_back,
                       color: Themecolor.white,
@@ -77,20 +258,36 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
                     height: height * 0.01,
                   ),
                   Center(
-                      child: Image.asset('assets/images/earphones.jpg',width: width*0.4,height: height*0.15,),),
+                    child: InkWell(
+                      onTap: () {
+                        if (isHeadsetConnected && !isAlarmTriggered) {
+                          setState(() {
+                            isActivatedPress = true;
+                          });
+                          _showSnackbar('Alarm activated');
+                        } else if (!isHeadsetConnected) {
+                          _showSnackbar('Connect earphones to activate');
+                        }
+                      },
+                      child: CircleAvatar(
+                        backgroundColor: Themecolor.black,
+                        child: Text(
+                          isActivatedPress ? 'Activated' : 'Activate',
+                          style: Themetext.ctextstyle,
+                        ),
+                        maxRadius: 45,
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: height * 0.01,
                   ),
                   Text(
-                    'Refresh',
-                    style: Themetext.atextstyle
-                        .copyWith(fontWeight: FontWeight.bold),
+                    isHeadsetConnected
+                        ? 'Earphones connected'
+                        : 'Earphones not connected',
                   ),
                   SizedBox(
-                    height: height * 0.01,
-                  ),
-                  Text('EarPHones not connected'),
-                   SizedBox(
                     height: height * 0.01,
                   ),
                   Padding(
@@ -101,10 +298,12 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
                           border: const Border(
-                              bottom: BorderSide(
-                                  color: Colors.black,
-                                  width: 2.0,
-                                  style: BorderStyle.solid))),
+                            bottom: BorderSide(
+                              color: Colors.black,
+                              width: 2.0,
+                              style: BorderStyle.solid,
+                            ),
+                          )),
                       child: ListTile(
                         leading: Icon(
                           Icons.lightbulb_outlined,
@@ -115,10 +314,10 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
                           style: Themetext.atextstyle,
                         ),
                         trailing: Switch(
-                          value: _switchValue,
+                          value: _flashlight,
                           onChanged: (value) {
                             setState(() {
-                              _switchValue = value;
+                              _flashlight = value;
                             });
                           },
                         ),
@@ -134,10 +333,12 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
                           border: Border(
-                              bottom: BorderSide(
-                                  color: Colors.black,
-                                  width: 2.0,
-                                  style: BorderStyle.solid))),
+                            bottom: BorderSide(
+                              color: Colors.black,
+                              width: 2.0,
+                              style: BorderStyle.solid,
+                            ),
+                          )),
                       child: ListTile(
                         leading: Icon(
                           Icons.vibration,
@@ -148,10 +349,10 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
                           style: Themetext.atextstyle,
                         ),
                         trailing: Switch(
-                          value: _stopswitchValue,
+                          value: vibration,
                           onChanged: (value) {
                             setState(() {
-                              _stopswitchValue = value;
+                              vibration = value;
                             });
                           },
                         ),
@@ -164,24 +365,21 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Container(
-                      // height: height * 0.1,
                       decoration: BoxDecoration(
-                          color: Colors.green[300],
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(20))),
+                        color: Colors.green[300],
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                      ),
                       child: ListTile(
-                        leading: CircleAvatar(
-                       
-                          child: Image.asset('assets/images/charger.jpg'),
+                        leading: Icon(
+                          Icons.lightbulb,
+                          size: 35,
+                          color: Themecolor.white,
                         ),
                         title: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             Text('Avoid Over charging',style: Themetext.atextstyle.copyWith(color: Colors.red, fontWeight: FontWeight.bold)),
-                             SizedBox(height: height*0.01,),
                             Text(
-                              
-                              'For the best result always turn on vibration when you are in crowded areas and also turn on the flash light',
+                              'For the best result always turn on vibration when you are in crowded areas and also turn on the flashlight',
                               style: Themetext.ctextstyle,
                             ),
                           ],
@@ -198,21 +396,121 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Themecolor.primary,
-        onTap: _onItemTapped,
+    );
+  }
+
+  void _showSnackbar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: Duration(seconds: 3),
       ),
+    );
+  }
+
+  void playSound(BuildContext context, bool torch, bool vibrate) async {
+    AnalyticsEngine.logAlarmActivated('Do_not_touch_my_phone');
+    String tunePath = TuneManager.getSelectedTune();
+    // Set the device volume to maximum
+    VolumeController().maxVolume();
+
+    player.setReleaseMode(ReleaseMode.stop);
+    player.play(AssetSource(tunePath), volume: 1.0);
+    // await player.setSource(AssetSource('alarm.mp3'));
+    await player.resume();
+
+    // Turn on the flashlight
+    try {
+      if (torch) {
+        await TorchLight.enableTorch();
+      }
+    } catch (e) {
+      print('Could not enable torch: $e');
+    }
+
+    if (vibrate) {
+      Vibration.vibrate(
+        pattern: [
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+          500,
+          1000,
+          500,
+          2000,
+          500,
+          3000,
+          500,
+          500,
+        ],
+        intensities: [
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255,
+          0,
+          128,
+          0,
+          255,
+          0,
+          64,
+          0,
+          255
+        ],
+      );
+    }
+
+    // Show alert dialog to stop the sound
+
+    // Show alert dialog to stop the sound
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alarm Playing'),
+          content: Text('The alarm is playing. Do you want to stop it?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                setState(() {
+                  isActivatedPress = false;
+                });
+                await player.stop();
+                await TorchLight.disableTorch();
+                Vibration.cancel();
+                Navigator.of(context).pop();
+              },
+              child: Text('Stop Alarm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

@@ -61,5 +61,12 @@
             android:value="ca-app-pub-4161728863134324~2621448732"/>
         <meta-data android:name="com.google.android.gms.ads.flag.NATIVE_AD_DEBUGGER_ENABLED"
             android:value="false" />
+        <receiver android:name="flutter.moum.headset_event.HeadsetBroadcastReceiver"
+        android:exported="true">
+           <intent-filter>
+               <action android:name="android.intent.action.HEADSET_PLUG" />
+               <action android:name="android.intent.action.MEDIA_BUTTON" />
+           </intent-filter>
+       </receiver>
     </application>
 </manifest>

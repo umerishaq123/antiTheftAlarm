@@ -7,6 +7,8 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-4161728863134324~5341483987</string>
     <key>NSLocationWhenInUseUsageDescription</key>

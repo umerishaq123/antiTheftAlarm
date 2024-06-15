@@ -9,7 +9,6 @@ import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:proximity_sensor/proximity_sensor.dart';
-import 'package:sensors_plus/sensors_plus.dart';
 import 'package:torch_light/torch_light.dart';
 import 'package:vibration/vibration.dart';
 import 'package:volume_controller/volume_controller.dart';
@@ -24,86 +23,53 @@ class AntiPocketDetection extends StatefulWidget {
 class _AntiPocketDetectionState extends State<AntiPocketDetection> {
   bool _flashlight = false;
   bool vibration = false;
-  bool isAlarmTriigered = false;
+  bool isAlarmTriggered = false;
   bool isActivatedPress = false;
-  Timer? _timer;
-  int _countdown = 3;
   bool _isListening = false;
-// for sensor
+  bool _hasBeenInPocket = false;
+  bool _isActivated = false;
+  StreamSubscription<dynamic>? _streamSubscription;
+
+  // for sensor
   bool _isNear = false;
-  double _accelerometerValueX = 0.0;
-  double _accelerometerValueY = 0.0;
-  double _accelerometerValueZ = 0.0;
-  String _orientation = 'Unknown';
 
   @override
   void initState() {
+    super.initState();
     AdTrackinServices.incrementAdFrequency();
     AnalyticsEngine.logFeatureClicked('Anti_Pocket_Detection');
     Future.microtask(() {
       AdManager.showInterstitialAd(onComplete: () {}, context: context);
     });
-    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _streamSubscription?.cancel();
   }
 
   void startDetection() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    setState(() {
+      _isActivated = true;
+      _isListening = true;
+    });
+    log('::: Listening started');
+
+    // Start sensor listeners
+    _streamSubscription = ProximitySensor.events.listen((int event) {
       setState(() {
-        if (_countdown > 0) {
-          _countdown--;
-        } else {
-          _timer?.cancel();
-          _isListening = true;
+        _isNear = (event > 0);
 
-          // Start sensor listeners
-          ProximitySensor.events.listen((int event) {
-            setState(() {
-              _isNear = (event > 0);
-            });
-          });
+        if (_isNear) {
+          if (_isListening) {
+            _hasBeenInPocket = true;
+          }
+        }
 
-          accelerometerEvents.listen((AccelerometerEvent event) {
-            setState(() {
-              _accelerometerValueX = event.x;
-              _accelerometerValueY = event.y;
-              _accelerometerValueZ = event.z;
-
-              // Determine the orientation of the device
-              if (_accelerometerValueZ.abs() > 9.0 &&
-                  _accelerometerValueX.abs() < 2.0 &&
-                  _accelerometerValueY.abs() < 2.0) {
-                _orientation = 'Flat';
-              } else if (_accelerometerValueX.abs() > 9.0 &&
-                  _accelerometerValueY.abs() < 2.0 &&
-                  _accelerometerValueZ.abs() < 2.0) {
-                _orientation =
-                    _accelerometerValueX > 0 ? 'Left Side' : 'Right Side';
-              } else if (_accelerometerValueY.abs() > 9.0 &&
-                  _accelerometerValueX.abs() < 2.0 &&
-                  _accelerometerValueZ.abs() < 2.0) {
-                _orientation =
-                    _accelerometerValueY > 0 ? 'Upright' : 'Upside Down';
-              } else {
-                _orientation = 'Unknown';
-              }
-            });
-
-            bool isInPocketMode = _isNear ||
-                ((_accelerometerValueZ.abs() > 9.0 &&
-                        _accelerometerValueX.abs() < 2.0 &&
-                        _accelerometerValueY.abs() < 2.0) || // Flat
-                    (_accelerometerValueX.abs() > 9.0 &&
-                        _accelerometerValueY.abs() < 2.0 &&
-                        _accelerometerValueZ.abs() < 2.0) || // Left or Right
-                    (_accelerometerValueY.abs() > 9.0 &&
-                        _accelerometerValueX.abs() < 2.0 &&
-                        _accelerometerValueZ.abs() < 2.0)); // Up or Down
-
-            if (_isListening && !isInPocketMode) {
-              _isListening = false;
-              playSound(context, _flashlight, vibration);
-            }
-          });
+        if (_isActivated && _isListening && _hasBeenInPocket && !_isNear) {
+          _isListening = false;
+          playSound(context, _flashlight, vibration);
         }
       });
     });
@@ -111,19 +77,7 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
 
   @override
   Widget build(BuildContext context) {
-    bool isInPocketMode = _isNear ||
-        ((_accelerometerValueZ.abs() > 9.0 &&
-                _accelerometerValueX.abs() < 2.0 &&
-                _accelerometerValueY.abs() < 2.0) || // Flat
-            (_accelerometerValueX.abs() > 9.0 &&
-                _accelerometerValueY.abs() < 2.0 &&
-                _accelerometerValueZ.abs() < 2.0) || // Left or Right
-            (_accelerometerValueY.abs() > 9.0 &&
-                _accelerometerValueX.abs() < 2.0 &&
-                _accelerometerValueZ.abs() < 2.0)); // Up or Down
-
-    log('::: isInPocketMode $isInPocketMode');
-    log('::: Orientation $_orientation');
+    log('::: hasBeenInPocket $_hasBeenInPocket');
 
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -134,12 +88,7 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
           child: Column(
             children: [
               Container(
-                // height: height * 0.35,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  // color: Themecolor.primary,
-                  // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
-                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -183,34 +132,37 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
                       height: height * 0.01,
                     ),
                     Center(
-                        child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          isActivatedPress = true;
-                        });
-                        if (isAlarmTriigered == true) {
-                          isAlarmTriigered = false;
-                        } else {
-                          startDetection();
-                        }
-                      },
-                      child: CircleAvatar(
-                        backgroundColor: Themecolor.black,
-                        child: Text(
-                          'Activate',
-                          style: Themetext.ctextstyle,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            isActivatedPress = true;
+                          });
+                          if (isAlarmTriggered) {
+                            isAlarmTriggered = false;
+                          } else {
+                            startDetection();
+                          }
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: Themecolor.black,
+                          child: Text(
+                            'Activate',
+                            style: Themetext.ctextstyle,
+                          ),
+                          maxRadius: 45,
                         ),
-                        maxRadius: 45,
                       ),
-                    )),
+                    ),
                     SizedBox(
                       height: height * 0.01,
                     ),
-                   Text(
+                    Text(
                       isActivatedPress
-                          ? _countdown > 0
-                              ? 'Activating in $_countdown...'
-                              : 'Activated'
+                          ? !_isActivated
+                              ? 'Please activate the alarm...'
+                              : !_hasBeenInPocket
+                                  ? 'Please put it in pocket...'
+                                  : 'Activated'
                           : 'Activate',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
@@ -335,7 +287,6 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
     final player = AudioPlayer();
     player.setReleaseMode(ReleaseMode.stop);
     player.play(AssetSource(tunePath), volume: 1.0);
-    // await player.setSource(AssetSource('alarm.mp3'));
     await player.resume();
 
     // Turn on the flashlight
@@ -418,7 +369,7 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
                 setState(() {
                   isActivatedPress = false;
                   _isListening = false;
-                  _countdown = 3;
+                  _hasBeenInPocket = false;
                 });
                 await player.stop();
                 await TorchLight.disableTorch();

@@ -1,3 +1,4 @@
+import 'package:antitheftalarm/Anti_Theft_Alarm/air_Phone_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/anti_pocket_detecttion.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
@@ -5,7 +6,6 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/widgets/drawer.dart';
 import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
-// import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/controller/utils.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:flutter/material.dart';
@@ -106,14 +106,14 @@ class _HomepageState extends State<Homepage> {
                 onTap: () {
                   // AdManager.showInterstitialAd(
                   //     onComplete: () {
-                       
+
                   //     },
                   //     context: context);
-                   Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DonotTouchPhone(),
-                            ));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DonotTouchPhone(),
+                      ));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -374,13 +374,13 @@ class _HomepageState extends State<Homepage> {
               ),
               InkWell(
                 onTap: () {
-                  Utils.snackBar('Feature will be avaialble soon.', context);
+                  // Utils.snackBar('Feature will be avaialble soon.', context);
                   // AnalyticsEngine.logFeatureClicked('BluetoothConnectionStatus');
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => BluetoothConnectionStatus(),
-                  //     ));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AirphonesDetection(),
+                      ));
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -401,7 +401,7 @@ class _HomepageState extends State<Homepage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Air Phones Detection',
+                                  'Wire\\Wireless Headphones detection',
                                   style: Themetext.atextstyle.copyWith(
                                       fontWeight: FontWeight.w900,
                                       fontSize: 16),

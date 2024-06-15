@@ -26,7 +26,7 @@ class _WifiDetectionState extends State<WifiDetection> {
   final Connectivity _connectivity = Connectivity();
   StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool isActivatedPress = false;
-  bool _tourch = false;
+  bool _flashlight = false;
   bool vibration = false;
   bool isAlarmTriigered = false;
 
@@ -73,7 +73,7 @@ class _WifiDetectionState extends State<WifiDetection> {
       // For example, you can call a function to start the alarm
       if (isAlarmTriigered == false) {
         isAlarmTriigered = true;
-        _playSound(context, _tourch, vibration);
+        _playSound(context, _flashlight, vibration);
       }
     } else {
       print("Connected to WiFi");
@@ -209,10 +209,10 @@ class _WifiDetectionState extends State<WifiDetection> {
                             style: Themetext.atextstyle,
                           ),
                           trailing: Switch(
-                            value: _tourch,
+                            value: _flashlight,
                             onChanged: (value) {
                               setState(() {
-                                _tourch = value;
+                                _flashlight = value;
                               });
                             },
                           ),

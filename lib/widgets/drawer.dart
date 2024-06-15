@@ -1,3 +1,4 @@
+import 'package:antitheftalarm/Anti_Theft_Alarm/air_Phone_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/anti_pocket_detecttion.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/charging_detection.dart';
@@ -304,13 +305,13 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                Utils.snackBar('Feature will be avaialble soon.', context);
-                // AnalyticsEngine.logFeatureClicked('BluetoothConnectionStatus');
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => BluetoothConnectionStatus(),
-                //     ));
+              
+                AnalyticsEngine.logFeatureClicked('BluetoothConnectionStatus');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AirphonesDetection(),
+                    ));
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -322,7 +323,7 @@ class MyDrawer extends StatelessWidget {
                       // Text widget as the button label
                       Padding(
                         padding: const EdgeInsets.only(left: 18.0),
-                        child: Text('Air Phones detection'),
+                        child: Text('Wire\\Wireless Headphones detection'),
                       ),
                     ],
                   ),
