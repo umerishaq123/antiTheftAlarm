@@ -431,6 +431,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
+                _launchPlayStore();
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

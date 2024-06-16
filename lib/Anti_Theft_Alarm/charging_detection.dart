@@ -23,7 +23,6 @@ class ChargingDetection extends StatefulWidget {
 class _ChargingDetectionState extends State<ChargingDetection> {
   bool flashlight = false;
   bool vibrate = false;
-  int _selectedIndex = 0;
   final Battery _battery = Battery();
   bool isActivatedPress = false;
   bool isAlarmTriggered = false;
@@ -36,7 +35,8 @@ class _ChargingDetectionState extends State<ChargingDetection> {
     super.initState();
     Future.microtask(() {
       AdManager.showInterstitialAd(onComplete: () {}, context: context);
-    });    AdTrackinServices.incrementAdFrequency();
+    });
+    AdTrackinServices.incrementAdFrequency();
     AnalyticsEngine.logFeatureClicked('Charging_detection');
     // Subscribe to battery state changes
     _batterySubscription =
@@ -59,13 +59,6 @@ class _ChargingDetectionState extends State<ChargingDetection> {
   void dispose() {
     _batterySubscription?.cancel();
     super.dispose();
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      // Add your navigation logic here based on the index
-    });
   }
 
   void _activateAlarm() {
@@ -92,9 +85,11 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                   // height: height * 0.35,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    // color: Themecolor.primary,
-                  ),
-                  child: NativeAdWidget(isSmallTemplete: false,)),
+                      // color: Themecolor.primary,
+                      ),
+                  child: NativeAdWidget(
+                    isSmallTemplete: false,
+                  )),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -248,21 +243,6 @@ class _ChargingDetectionState extends State<ChargingDetection> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Themecolor.primary,
-        onTap: _onItemTapped,
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:headset_connection_event/headset_event.dart';
 import 'package:torch_light/torch_light.dart';
@@ -211,28 +212,11 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              height: height * 0.35,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                color: Themecolor.primary,
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 55, left: 15),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: Themecolor.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            NativeAdWidget(isSmallTemplete: false),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -247,7 +231,7 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      'Airphones Detection',
+                      'Earphone\'s Detection',
                       style: Themetext.atextstyle.copyWith(
                         fontWeight: FontWeight.w900,
                         fontSize: 18,

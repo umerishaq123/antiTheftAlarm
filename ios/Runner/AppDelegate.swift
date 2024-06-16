@@ -20,7 +20,17 @@ import GoogleMobileAds
             }
         }
         
-        GeneratedPluginRegistrant.register(with: self)
+        GeneratedPluginRegistrant.register(with: self) 
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
+
+        weak var registrar = self.registrar(forPlugin:"my-views")
+        let adViewFactory = MyAdViewNativeViewFactory(messenger : registrar!.messenger())
+        let viewRegistrar = self.registrar(forPlugin: "<my-views>")!
+        viewRegistrar.register(
+          adViewFactory,
+          withId : "myNativeAdView")
+
+
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 }
