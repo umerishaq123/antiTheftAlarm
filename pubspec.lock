@@ -358,14 +358,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_blue_plus:
-    dependency: "direct main"
-    description:
-      name: flutter_blue_plus
-      sha256: c762a694c2f67b1f492ef19ead2a30ed3254650bafd852cb8933823d13d7c89f
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.32.7"
   flutter_rating_bar:
     dependency: "direct main"
     description:
@@ -520,14 +512,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
-  native_ads_flutter:
-    dependency: "direct main"
-    description:
-      name: native_ads_flutter
-      sha256: "0de9f6a25ca1e825c55ffa2d8fb24f311b9a9bf5fcee1509a6cd1f3e6ef7b5cd"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.7"
   nm:
     dependency: transitive
     description:
