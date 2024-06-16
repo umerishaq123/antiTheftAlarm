@@ -26,20 +26,6 @@ class RatingDialog extends StatelessWidget {
     }
   }
 
-  // Future<void> _sendEmail(BuildContext context) async {
-  //   final Uri params = Uri(
-  //     scheme: 'mailto',
-  //     path: feedbackEmail,
-  //     query: 'subject=$feedbackSubject', // add subject and body here
-  //   );
-
-  //   String url = params.toString();
-  //   if (await canLaunch(url)) {
-  //     await launch(url);
-  //   } else {
-  //     _showErrorDialog(context, 'Could not launch email client');
-  //   }
-  // }
   Future<void> _sendFeedbackEmail(BuildContext context) async {
   final mailtoLink = Mailto(
     to: ['to@example.com'],
