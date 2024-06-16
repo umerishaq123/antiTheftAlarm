@@ -102,7 +102,7 @@ class _WifiDetectionState extends State<WifiDetection> {
                   decoration: BoxDecoration(
                     // color: Themecolor.primary,
                   ),
-                  child: NativeAdWidget()),
+                  child: NativeAdWidget(isSmallTemplete: false,)),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

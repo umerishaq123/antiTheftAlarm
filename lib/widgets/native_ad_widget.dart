@@ -1,11 +1,99 @@
+// import 'dart:developer';
+// import 'package:antitheftalarm/controller/remote_config_services.dart';
+// import 'package:flutter/material.dart';
+// import 'package:antitheftalarm/controller/ad_manager.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart'; // Import your AdCounter class
+
+// class NativeAdWidget extends StatefulWidget {
+//   const NativeAdWidget({Key? key}) : super(key: key);
+
+//   @override
+//   State<NativeAdWidget> createState() => _NativeAdWidgetState();
+// }
+
+// class _NativeAdWidgetState extends State<NativeAdWidget> {
+//   NativeAd? _nativeAd;
+//   bool _nativeAdIsLoaded = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     loadAd();
+//   }
+
+//   void loadAd() {
+//     if (Config.showAds) {
+//       // Check if conditions are met to show ad
+//       _nativeAd = NativeAd(
+//         adUnitId: AdManager.nativeAdTestId,
+//         factoryId: 'adFactoryExample',
+//         listener: NativeAdListener(
+//           onAdLoaded: (ad) {
+//             log('::: NativeAd loaded.');
+//             setState(() {
+//               _nativeAdIsLoaded = true;
+//             });
+//           },
+//           onAdFailedToLoad: (ad, error) {
+//             log('::: NativeAd failed to load: $error');
+//             ad.dispose();
+//           },
+//         ),
+//         request: const AdRequest(),
+//       );
+//       _nativeAd?.load();
+
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     _nativeAd?.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Config.hideAds // Check if ads should be hidden
+//         ? SizedBox()
+//         : _nativeAdIsLoaded
+//             ? Container(
+//                 margin: EdgeInsets.all(12),
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   border: Border.all(
+//                     color: Colors.red, // Border color
+//                     width: 3.0, // Border width
+//                   ),
+//                 ),
+//                 height: 200,
+//                 child: AdWidget(ad: _nativeAd!),
+//               )
+//             : Container(
+//                 margin: EdgeInsets.all(12),
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   border: Border.all(
+//                     color: Colors.red, // Border color
+//                     width: 3.0, // Border width
+//                   ),
+//                 ),
+//                 height: 200,
+//                 child: Text('Loading Ads'));
+//   }
+// }
+
 import 'dart:developer';
-import 'package:antitheftalarm/controller/remote_config_services.dart';
+import 'package:antitheftalarm/theme/themecolors.dart';
 import 'package:flutter/material.dart';
+import 'package:antitheftalarm/controller/remote_config_services.dart';
 import 'package:antitheftalarm/controller/ad_manager.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart'; // Import your AdCounter class
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class NativeAdWidget extends StatefulWidget {
-  const NativeAdWidget({Key? key}) : super(key: key);
+  final bool isSmallTemplete;
+  const NativeAdWidget({Key? key, required this.isSmallTemplete})
+      : super(key: key);
 
   @override
   State<NativeAdWidget> createState() => _NativeAdWidgetState();
@@ -14,6 +102,7 @@ class NativeAdWidget extends StatefulWidget {
 class _NativeAdWidgetState extends State<NativeAdWidget> {
   NativeAd? _nativeAd;
   bool _nativeAdIsLoaded = false;
+  bool _adFailedToLoad = false;
 
   @override
   void initState() {
@@ -23,7 +112,6 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   void loadAd() {
     if (Config.showAds) {
-      // Check if conditions are met to show ad
       _nativeAd = NativeAd(
         adUnitId: AdManager.nativeAdTestId,
         factoryId: 'adFactoryExample',
@@ -37,12 +125,45 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
           onAdFailedToLoad: (ad, error) {
             log('::: NativeAd failed to load: $error');
             ad.dispose();
+            setState(() {
+              _adFailedToLoad = true;
+            });
           },
         ),
         request: const AdRequest(),
+        nativeTemplateStyle: NativeTemplateStyle(
+          templateType:
+              widget.isSmallTemplete ? TemplateType.small : TemplateType.small,
+          // Customize ad styles here
+          // mainBackgroundColor: Colors.purple,
+          cornerRadius: 10.0,
+          callToActionTextStyle: NativeTemplateTextStyle(
+            textColor: Themecolor.white,
+            backgroundColor: Themecolor.primary,
+            style: NativeTemplateFontStyle.monospace,
+            size: 16.0,
+          ),
+          primaryTextStyle: NativeTemplateTextStyle(
+            textColor: Colors.black,
+            // backgroundColor: Colors.cyan,
+            style: NativeTemplateFontStyle.italic,
+            size: 16.0,
+          ),
+          secondaryTextStyle: NativeTemplateTextStyle(
+            textColor: Colors.green,
+            backgroundColor: Colors.black,
+            style: NativeTemplateFontStyle.bold,
+            size: 16.0,
+          ),
+          tertiaryTextStyle: NativeTemplateTextStyle(
+            textColor: Colors.brown,
+            backgroundColor: Colors.amber,
+            style: NativeTemplateFontStyle.normal,
+            size: 16.0,
+          ),
+        ),
       );
       _nativeAd?.load();
-     
     }
   }
 
@@ -54,31 +175,74 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Config.hideAds // Check if ads should be hidden
-        ? SizedBox()
-        : _nativeAdIsLoaded
-            ? Container(
-                margin: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Colors.red, // Border color
-                    width: 3.0, // Border width
-                  ),
+    if (!Config.showAds) {
+      // Ads are hidden, return an empty SizedBox
+      return SizedBox();
+    }
+
+    if (_adFailedToLoad) {
+      // Show a default container if ad fails to load
+      return Container(
+        margin: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(
+            color: Colors.red,
+            width: 1.0,
+          ),
+        ),
+        height: 200,
+        child: Center(
+          child: Text('Failed to load ad'),
+        ),
+      );
+    }
+
+    // Default state: show loading container while ad is being loaded
+    return ConstrainedBox(
+      constraints: widget.isSmallTemplete
+          ? BoxConstraints(
+              minWidth: MediaQuery.of(context)
+                  .size
+                  .width, // minimum recommended width
+              maxWidth: MediaQuery.of(context).size.width,
+              maxHeight: MediaQuery.of(context).size.height / 8,
+            )
+          : BoxConstraints(
+              minWidth: MediaQuery.of(context)
+                  .size
+                  .width, // minimum recommended width
+              maxWidth: MediaQuery.of(context).size.width,
+              // maxHeight: MediaQuery.of(context).size.height / 2,
+              maxHeight: MediaQuery.of(context).size.height / 8,
+            ),
+      child: _nativeAdIsLoaded
+          ? Container(
+              margin: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(
+                  color: Colors.black,
+                  width: 1.0,
                 ),
-                height: 200,
-                child: AdWidget(ad: _nativeAd!),
-              )
-            : Container(
-                margin: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(
-                    color: Colors.red, // Border color
-                    width: 3.0, // Border width
+              ),
+              child: AdWidget(ad: _nativeAd!))
+          : Center(
+              child: Container(
+                padding: EdgeInsets.all(8),
+                  margin: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.0,
+                    ),
                   ),
-                ),
-                height: 200,
-                child: Text('Loading Ads'));
+                  width: double.infinity,
+                  height: widget.isSmallTemplete
+                      ? MediaQuery.of(context).size.height / 8
+                      : MediaQuery.of(context).size.height / 8,
+                  child: Text('Loading Ad...'))),
+    );
   }
 }

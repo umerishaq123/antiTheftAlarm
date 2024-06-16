@@ -44,7 +44,7 @@ class _IntruderAlertState extends State<IntruderAlert> {
               decoration: BoxDecoration(
                 color: Themecolor.primary,
               ),
-              child: NativeAdWidget(),
+              child: NativeAdWidget(isSmallTemplete: false,),
             ),
             Container(
               height: height * 0.57,

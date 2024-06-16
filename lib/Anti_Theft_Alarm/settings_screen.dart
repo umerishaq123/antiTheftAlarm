@@ -13,7 +13,7 @@ class SettingsPage extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          NativeAdWidget(),
+          NativeAdWidget(isSmallTemplete: false,),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(

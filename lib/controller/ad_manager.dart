@@ -37,7 +37,7 @@ class AdManager {
       {required VoidCallback onComplete, required BuildContext context}) {
     log('::: showInterstitialAdOnSplash');
 
-    if (Config.showAds) {
+    if (Config.showAds && Config.showSplashAds) {
       if (_interstitialAdLoaded && _interstitialAd != null) {
         _interstitialAd?.show();
         onComplete();

@@ -60,7 +60,7 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
                       // color: Themecolor.primary,
                       // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
                       ),
-                  child: NativeAdWidget()),
+                  child: NativeAdWidget(isSmallTemplete: false,)),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

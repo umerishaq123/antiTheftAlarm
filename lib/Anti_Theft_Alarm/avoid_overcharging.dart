@@ -53,7 +53,7 @@ class _AvoidOverchargingState extends State<AvoidOvercharging> {
                   decoration: BoxDecoration(
                     // color: Themecolor.primary,
                   ),
-                  child: NativeAdWidget()),
+                  child: NativeAdWidget(isSmallTemplete: false,)),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

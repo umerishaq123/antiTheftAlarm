@@ -94,7 +94,7 @@ class _ChargingDetectionState extends State<ChargingDetection> {
                   decoration: BoxDecoration(
                     // color: Themecolor.primary,
                   ),
-                  child: NativeAdWidget()),
+                  child: NativeAdWidget(isSmallTemplete: false,)),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

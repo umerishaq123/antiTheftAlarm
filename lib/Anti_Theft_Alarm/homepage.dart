@@ -428,7 +428,7 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
-      bottomNavigationBar: NativeAdWidget(),
+      bottomNavigationBar: NativeAdWidget(isSmallTemplete: true,),
     );
   }
 }
