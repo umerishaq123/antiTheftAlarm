@@ -9,28 +9,38 @@ import GoogleMobileAds
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         let flutterViewController: FlutterViewController = window?.rootViewController as! FlutterViewController
-        let channel = FlutterMethodChannel(name: "dev.fluttercommunity.plus/sensors/method", binaryMessenger: flutterViewController.binaryMessenger)
-        channel.setMethodCallHandler { [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) in
-            if call.method == "setAccelerationSamplingPeriod" {
-                // Implement your logic here
-                // For instance, you might want to set the sampling period for sensor data
-                result(nil)
-            } else {
-                result(FlutterMethodNotImplemented)
-            }
-        }
-        
-        GeneratedPluginRegistrant.register(with: self) 
-        GADMobileAds.sharedInstance().start(completionHandler: nil)
+        let channel = FlutterMethodHandler.setup(with: flutterViewController.binaryMessenger)
 
-        weak var registrar = self.registrar(forPlugin:"my-views")
-        let adViewFactory = MyAdViewNativeViewFactory(messenger : registrar!.messenger())
-        let viewRegistrar = self.registrar(forPlugin: "<my-views>")!
-        viewRegistrar.register(
-          adViewFactory,
-          withId : "myNativeAdView")
-
-
+        GeneratedPluginRegistrant.register(with: self)
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+class FlutterMethodHandler {
+    static func setup(with binaryMessenger: FlutterBinaryMessenger) -> FlutterMethodChannel {
+        let channel = FlutterMethodChannel(name: "dev.fluttercommunity.plus/sensors/method", binaryMessenger: binaryMessenger)
+        channel.setMethodCallHandler { (call, result) in
+            self.handleMethodCall(call, result: result)
+        }
+        return channel
+    }
+
+    private static func handleMethodCall(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if call.method == "setAccelerationSamplingPeriod" {
+            // Implement your logic here
+            // For instance, you might want to set the sampling period for sensor data
+            result(nil)
+        } else {
+            result(FlutterMethodNotImplemented)
+        }
     }
 }
