@@ -21,9 +21,7 @@ void main() async {
   if (connectivityResult.contains(ConnectivityResult.mobile) ||
       connectivityResult.contains(ConnectivityResult.wifi) ||
       connectivityResult.contains(ConnectivityResult.vpn)) {
-        print('::: i am here');
     await AdManager.init(); // Initialize Google AdMob
-
     await Config.initConfig(); // Initialize remote config
   }
 

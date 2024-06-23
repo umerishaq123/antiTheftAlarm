@@ -96,13 +96,7 @@ class _WifiDetectionState extends State<WifiDetection> {
           color: Themecolor.white,
           child: Column(
             children: [
-              Container(
-                  // height: height * 0.35,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    // color: Themecolor.primary,
-                  ),
-                  child: NativeAdWidget(isSmallTemplete: false,)),
+              NativeAdWidget(),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

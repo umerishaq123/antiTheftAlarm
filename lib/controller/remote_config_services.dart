@@ -7,6 +7,7 @@ class Config {
 
   static const _defaultValues = {
     "show_ads": true,
+    "show_splash_ad": true,
     "ad_frequency": 3, // Adjusted for session-based frequency
     "max_ads_per_session": 3, // Adjusted for session-based maximum ads
   };
@@ -33,27 +34,4 @@ class Config {
   static int get adFrequency => _config.getInt('ad_frequency');
   static int get maxAdsPerSession => _config.getInt('max_ads_per_session');
   static bool get hideAds => !_showAdprivate;
-}
-
-class AdCounter {
-  static int _sessionCounter = 0;
-  static int _adFrequency = Config.adFrequency;
-  static int _maxAdsPerSession = 0; // Initially set to 0
-
-  static void incrementSessionCounter() {
-    _sessionCounter++;
-    if (_sessionCounter >= _adFrequency) {
-      _adFrequency++; // Increase ad frequency after an ad is shown
-      _sessionCounter = 0; // Reset session counter
-    }
-  }
-
-  static bool shouldShowAd() {
-    return _sessionCounter >= _adFrequency &&
-        _maxAdsPerSession < Config.maxAdsPerSession;
-  }
-
-  static void incrementMaxAdsPerSession() {
-    _maxAdsPerSession++;
-  }
 }

@@ -53,14 +53,8 @@ class _DonotTouchPhoneState extends State<DonotTouchPhone> {
           color: Themecolor.white,
           child: Column(
             children: [
-              Container(
-                  // height: height * 0.35,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      // color: Themecolor.primary,
-                      // borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30),bottomRight: Radius.circular(30))
-                      ),
-                  child: NativeAdWidget(isSmallTemplete: false,)),
+              NativeAdWidget(
+              ),
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(

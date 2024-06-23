@@ -6,6 +6,7 @@ import 'package:antitheftalarm/controller/analytics_engine.dart';
 import 'package:antitheftalarm/controller/tune_manager.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:antitheftalarm/theme/themecolors.dart';
+import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:proximity_sensor/proximity_sensor.dart';
@@ -87,25 +88,7 @@ class _AntiPocketDetectionState extends State<AntiPocketDetection> {
           color: Themecolor.white,
           child: Column(
             children: [
-              Container(
-                width: double.infinity,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 55, left: 15),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Themecolor.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              NativeAdWidget(
               ),
               Container(
                 width: double.infinity,

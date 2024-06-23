@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.ginnie.dont.touch.phone.antitheft</string>
+	<string>com.ginnie.dont.touch.phone.antitheftt</string>
 	<key>PROJECT_ID</key>
 	<string>anti-theft-ginnie</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:561601266702:ios:7a6ace8708fe2ef740a85f</string>
+	<string>1:561601266702:ios:c1b4f0041d3362d340a85f</string>
 </dict>
 </plist>

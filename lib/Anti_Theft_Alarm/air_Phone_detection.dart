@@ -216,7 +216,7 @@ class _AirphonesDetectionState extends State<AirphonesDetection> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            NativeAdWidget(isSmallTemplete: false),
+            NativeAdWidget(),
             Container(
               width: double.infinity,
               decoration: BoxDecoration(

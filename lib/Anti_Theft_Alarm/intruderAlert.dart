@@ -38,14 +38,7 @@ class _IntruderAlertState extends State<IntruderAlert> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              height: height * 0.35,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Themecolor.primary,
-              ),
-              child: NativeAdWidget(isSmallTemplete: false,),
-            ),
+            NativeAdWidget(),
             Container(
               height: height * 0.57,
               width: double.infinity,

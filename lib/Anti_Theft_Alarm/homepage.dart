@@ -400,11 +400,14 @@ class _HomepageState extends State<Homepage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  'Wire\\Wireless Headphones detection',
-                                  style: Themetext.atextstyle.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16),
+                                Container(
+                                  width: MediaQuery.of(context).size.width/1.5,
+                                  child: Text(
+                                    'Wire\\Wireless Headphones detection',
+                                    style: Themetext.atextstyle.copyWith(
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 16),
+                                  ),
                                 ),
                                 Icon(
                                   Icons.headphones,
@@ -428,7 +431,7 @@ class _HomepageState extends State<Homepage> {
           ),
         ),
       ),
-      bottomNavigationBar: NativeAdWidget(isSmallTemplete: true,),
+      bottomNavigationBar: NativeAdWidget(),
     );
   }
 }

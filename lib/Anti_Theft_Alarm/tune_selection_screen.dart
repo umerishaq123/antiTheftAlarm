@@ -133,7 +133,7 @@ class _TuneSelectionPageState extends State<TuneSelectionPage> {
       ),
       body: Column(
         children: [
-          NativeAdWidget(isSmallTemplete: false,),
+          NativeAdWidget(),
           Expanded(
             child: ListView.builder(
               itemCount: tunes.length,
