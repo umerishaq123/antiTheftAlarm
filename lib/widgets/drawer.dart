@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:antitheftalarm/Anti_Theft_Alarm/air_Phone_detection.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/anti_pocket_detecttion.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/avoid_overcharging.dart';
@@ -7,7 +9,6 @@ import 'package:antitheftalarm/widgets/rating_dialoge.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/settings_screen.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
 import 'package:antitheftalarm/controller/analytics_engine.dart';
-import 'package:antitheftalarm/controller/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,13 +20,22 @@ class MyDrawer extends StatelessWidget {
   });
 
   final double width;
+
   void shareApp() {
-    final String appLink =
+    final String appLinkAndroid =
         'https://play.google.com/store/apps/details?id=com.ginnie.dont.touch.phone.antitheft';
-    Share.share('Check out this amazing app: $appLink');
+    final String appLinkiOS =
+        'https://apps.apple.com/app/anti-theft-alarm/id6504679627';
+
+    if (Platform.isAndroid) {
+      Share.share('Check out this amazing app: $appLinkAndroid');
+    } else if (Platform.isIOS) {
+      Share.share('Check out this amazing app: $appLinkiOS');
+    }
   }
-    // Function to launch privacy policy URL
-  void _launchPrivacyPolicyURL() async {
+
+  // Function to launch privacy policy URL
+  void _privacyPolicy() async {
     const url = 'https://ginnieworks.blogspot.com/p/privacy-policy.html?m=1';
     if (await canLaunch(url)) {
       await launch(url);
@@ -33,15 +43,18 @@ class MyDrawer extends StatelessWidget {
       throw 'Could not launch $url';
     }
   }
-  _launchPlayStore() async {
-    final url =
-        'https://play.google.com/store/apps/developer?id=GinnieWorks';
+
+  _moreApps() async {
+    final url = Platform.isAndroid
+        ? 'https://play.google.com/store/apps/developer?id=GinnieWorks'
+        : 'https://apps.apple.com/us/developer/ginnieworks-inc/id1703286458';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch Play Store';
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -101,41 +114,40 @@ class MyDrawer extends StatelessWidget {
                 'Features',
                 style: TextStyle(fontSize: 20),
               )),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                // AnalyticsEngine.logFeatureClicked('Intruder Alert');
-                Utils.snackBar('Feature will be avaialble soon.', context);
+          // Padding(
+          //   padding: const EdgeInsets.all(12.0),
+          //   child: ElevatedButton(
+          //     onPressed: () {
+          //       Navigator.pop(context);
+          //       // AnalyticsEngine.logFeatureClicked('Intruder Alert');
+          //       Utils.snackBar('Feature will be avaialble soon.', context);
+          //       // Navigator.push(
+          //       //     context,
+          //       //     MaterialPageRoute(
+          //       //       builder: (context) => IntruderAlert(),
+          //       //     ));
+          //     },
+          //     child: Row(
+          //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //       children: [
+          //         // Leading widget
+          //         Row(
+          //           children: [
+          //             Icon(Icons.warning_amber),
+          //             // Text widget as the button label
+          //             Padding(
+          //               padding: const EdgeInsets.only(left: 18.0),
+          //               child: Text('Intruder alert'),
+          //             ),
+          //           ],
+          //         ),
+          //         // Trailing widget
+          //         Icon(Icons.arrow_forward_ios),
+          //       ],
+          //     ),
+          //   ),
+          // ),
 
-                // Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) => IntruderAlert(),
-                //     ));
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Leading widget
-                  Row(
-                    children: [
-                      Icon(Icons.warning_amber),
-                      // Text widget as the button label
-                      Padding(
-                        padding: const EdgeInsets.only(left: 18.0),
-                        child: Text('Intruder alert'),
-                      ),
-                    ],
-                  ),
-
-                  // Trailing widget
-                  Icon(Icons.arrow_forward_ios),
-                ],
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: ElevatedButton(
@@ -305,7 +317,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-              
+
                 AnalyticsEngine.logFeatureClicked('BluetoothConnectionStatus');
                 Navigator.push(
                     context,
@@ -403,7 +415,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                _launchPrivacyPolicyURL();
+                _privacyPolicy();
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -431,7 +443,7 @@ class MyDrawer extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 Navigator.pop(context);
-                _launchPlayStore();
+                _moreApps();
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

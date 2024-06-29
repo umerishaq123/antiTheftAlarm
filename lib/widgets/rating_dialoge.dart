@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:mailto/mailto.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RatingDialog extends StatelessWidget {
-  final String appStoreUrl =
-      'https://play.google.com/store/apps/details?id=com.ginnie.dont.touch.phone.antitheft';
+  final String appStoreUrl = Platform.isAndroid
+      ? 'https://play.google.com/store/apps/details?id=com.ginnie.dont.touch.phone.antitheft'
+      : 'https://apps.apple.com/app/anti-theft-alarm/id6504679627';
   final String feedbackEmail = 'feedback@yourapp.com';
   final String feedbackSubject = 'App Feedback';
 
@@ -27,19 +30,17 @@ class RatingDialog extends StatelessWidget {
   }
 
   Future<void> _sendFeedbackEmail(BuildContext context) async {
-  final mailtoLink = Mailto(
-    to: ['to@example.com'],
-    cc: ['cc1@example.com', 'cc2@example.com'],
-    subject: 'mailto example subject',
-    body: 'mailto example body',
-  );
-  // Convert the Mailto instance into a string.
-  // Use either Dart's string interpolation
-  // or the toString() method.
-  await launch('$mailtoLink');
-}
-
-
+    final mailtoLink = Mailto(
+      to: ['to@example.com'],
+      cc: ['cc1@example.com', 'cc2@example.com'],
+      subject: 'mailto example subject',
+      body: 'mailto example body',
+    );
+    // Convert the Mailto instance into a string.
+    // Use either Dart's string interpolation
+    // or the toString() method.
+    await launch('$mailtoLink');
+  }
 
   void _showErrorDialog(BuildContext context, String message) {
     showDialog(

@@ -7,22 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdManager {
-  // static var nativeAdRealId = Platform.isAndroid
-  //     ? 'ca-app-pub-4161728863134324/8496591945'
-  //     : 'ca-app-pub-4161728863134324/8227162464';
+  static var nativeAdRealId = Platform.isAndroid
+      ? 'ca-app-pub-4161728863134324/8496591945'
+      : 'ca-app-pub-4161728863134324/8227162464';
 
-  // static var interstitialAdRealId = Platform.isAndroid
-  //     ? 'ca-app-pub-4161728863134324/2286406818'
-  //     : "ca-app-pub-4161728863134324/1402238973";
+  static var interstitialAdRealId = Platform.isAndroid
+      ? 'ca-app-pub-4161728863134324/2286406818'
+      : "ca-app-pub-4161728863134324/1402238973";
 
 // <------------------------------------------------------------------------------------------------------>
 
-  static var interstitialAdTestId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/1033173712'
-      : 'ca-app-pub-3940256099942544/4411468910';
-  static var nativeAdTestId = Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/2247696110'
-      : 'ca-app-pub-3940256099942544/3986624511';
+  // static var interstitialAdTestId = Platform.isAndroid
+  //     ? 'ca-app-pub-3940256099942544/1033173712'
+  //     : 'ca-app-pub-3940256099942544/4411468910';
+  // static var nativeAdTestId = Platform.isAndroid
+  //     ? 'ca-app-pub-3940256099942544/2247696110'
+  //     : 'ca-app-pub-3940256099942544/3986624511';
 // <------------------------------------------------------------------------------------------------------>
   // for initializing ads sdk
   static Future<void> init() async {
@@ -47,7 +47,7 @@ class AdManager {
       MyDialogs.showProgress(context);
 
       InterstitialAd.load(
-        adUnitId: interstitialAdTestId,
+        adUnitId: interstitialAdRealId,
         request: AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (ad) {
@@ -85,7 +85,7 @@ class AdManager {
       MyDialogs.showProgress(context);
 
       InterstitialAd.load(
-        adUnitId: interstitialAdTestId,
+        adUnitId: interstitialAdRealId,
         request: AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (ad) {

@@ -6,7 +6,6 @@ import 'package:antitheftalarm/Anti_Theft_Alarm/donotTouchPhone.dart';
 import 'package:antitheftalarm/widgets/drawer.dart';
 import 'package:antitheftalarm/widgets/native_ad_widget.dart';
 import 'package:antitheftalarm/Anti_Theft_Alarm/wifi_detection.dart';
-import 'package:antitheftalarm/controller/utils.dart';
 import 'package:antitheftalarm/theme/theme_text.dart';
 import 'package:flutter/material.dart';
 
@@ -48,67 +47,61 @@ class _HomepageState extends State<Homepage> {
               SizedBox(
                 height: height * 0.01,
               ),
+              // InkWell(
+              //   onTap: () {
+              //     // logFeatureClicked
+              //     Utils.snackBar('Feature will be avaialble soon.', context);
+              //     // Navigator.push(
+              //     //     context,
+              //     //     MaterialPageRoute(
+              //     //       builder: (context) => IntruderAlert(),
+              //     //     ));
+              //   },
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: Container(
+              //         height: height * 0.13,
+              //         width: double.infinity,
+              //         decoration: BoxDecoration(
+              //             borderRadius: BorderRadius.circular(15),
+              //             border: Border(
+              //                 bottom: BorderSide(
+              //                     color: Colors.black,
+              //                     width: 2.0,
+              //                     style: BorderStyle.solid))),
+              //         child: Column(
+              //           children: [
+              //             Padding(
+              //               padding: const EdgeInsets.all(8.0),
+              //               child: Row(
+              //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //                 children: [
+              //                   Text(
+              //                     'Intruder Alert',
+              //                     style: Themetext.atextstyle.copyWith(
+              //                         fontWeight: FontWeight.w900,
+              //                         fontSize: 16),
+              //                   ),
+              //                   Icon(
+              //                     Icons.warning_amber,
+              //                     color: Colors.red,
+              //                   ),
+              //                 ],
+              //               ),
+              //             ),
+              //             Text(
+              //               'Capture intruder photos upon unatherrised unlock attempt',
+              //               style: Themetext.greyColortextstyle,
+              //             )
+              //           ],
+              //         )),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: height * 0.01,
+              // ),
               InkWell(
                 onTap: () {
-                  // logFeatureClicked
-                  Utils.snackBar('Feature will be avaialble soon.', context);
-
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => IntruderAlert(),
-                  //     ));
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                      height: height * 0.13,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border(
-                              bottom: BorderSide(
-                                  color: Colors.black,
-                                  width: 2.0,
-                                  style: BorderStyle.solid))),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Intruder Alert',
-                                  style: Themetext.atextstyle.copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 16),
-                                ),
-                                Icon(
-                                  Icons.warning_amber,
-                                  color: Colors.red,
-                                ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            'Capture intruder photos upon unatherrised unlock attempt',
-                            style: Themetext.greyColortextstyle,
-                          )
-                        ],
-                      )),
-                ),
-              ),
-              SizedBox(
-                height: height * 0.01,
-              ),
-              InkWell(
-                onTap: () {
-                  // AdManager.showInterstitialAd(
-                  //     onComplete: () {
-
-                  //     },
-                  //     context: context);
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -419,7 +412,7 @@ class _HomepageState extends State<Homepage> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              'Alarm when battery is fully charged!',
+                              'Alarm when headphones unpluged!',
                               style: Themetext.greyColortextstyle,
                             ),
                           )

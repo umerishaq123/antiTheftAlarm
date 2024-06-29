@@ -28,7 +28,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
   void loadAd() {
     if (Config.showAds) {
       _nativeAd = NativeAd(
-        adUnitId: AdManager.nativeAdTestId,
+        adUnitId: AdManager.nativeAdRealId,
         factoryId: 'adFactoryExample',
         listener: NativeAdListener(
           onAdLoaded: (ad) {
